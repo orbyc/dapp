@@ -1,4 +1,4 @@
-import { Box, Button, Grid, IconButton, Typography } from "@mui/material";
+import { Box, Grid, IconButton, Typography } from "@mui/material";
 import React, { useContext } from "react";
 import mapImage from "assets/explorer/map_updated.png";
 import { weightConvert } from "utils/weight";
@@ -83,11 +83,7 @@ export const ExplorerHeader: React.FC = () => {
           }}
         >
           <Grid container flexGrow={1} justifyContent={"center"} alignItems={"center"}>
-            <a
-              href="https://goo.gl/maps/kUghHRaHLhXtQkAt8"
-              target={"_blank"}
-              rel="noreferrer"
-            >
+            <a href="https://goo.gl/maps/kUghHRaHLhXtQkAt8" target={"_blank"} rel="noreferrer">
               <IconButton aria-label="delete" size="large" color="primary">
                 <LocationOnRoundedIcon fontSize="inherit" />
               </IconButton>
