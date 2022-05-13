@@ -1,8 +1,7 @@
 import React from "react";
 import ReactDOM from "react-dom/client";
 import reportWebVitals from "./reportWebVitals";
-
-import { Asset } from "./domain/core/domain_pb";
+import { Asset } from "orbyc-core/pb/domain_pb";
 
 const App = () => {
   const asset = new Asset();
