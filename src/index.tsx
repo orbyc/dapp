@@ -1,30 +1,42 @@
 import React from "react";
 import ReactDOM from "react-dom/client";
 import reportWebVitals from "./reportWebVitals";
-import { Asset } from "orbyc-core/pb/domain_pb";
+// import { Buffer } from "buffer";
+// import { Asset } from "orbyc-core/pb/domain_pb";
 
-const App = () => {
-  const asset = new Asset();
+import { AppRoutes } from "routes";
+import "index.css"
 
-  asset.setId(1000);
-  asset.setIssuer("Address");
-  asset.setOwner("Address");
+// const App = () => {
+//   const asset = new Asset();
 
-  return (
-    <>
-      <ul>
-        <li>{asset.getId()}</li>
-        <li>{asset.getIssuer()}</li>
-        <li>{asset.getOwner()}</li>
-      </ul>
-    </>
-  );
-};
+//   asset.setId(1000);
+//   asset.setIssuer("Address");
+//   asset.setOwner("Address");
+
+//   var assetObj = asset.serializeBinary();
+//   var encoded = Buffer.from(assetObj).toString("hex");
+
+//   var decoded = Uint8Array.from(Buffer.from(encoded, "hex"));
+
+//   var asset2 = Asset.deserializeBinary(decoded);
+
+//   return (
+//     <>
+//       <ul>
+//         <li>{asset2.getId()}</li>
+//         <li>{asset2.getIssuer()}</li>
+//         <li>{asset2.getOwner()}</li>
+//         <li>{encoded}</li>
+//       </ul>
+//     </>
+//   );
+// };
 
 const root = ReactDOM.createRoot(document.getElementById("root") as HTMLElement);
 root.render(
   <React.StrictMode>
-    <App />
+    <AppRoutes />
   </React.StrictMode>
 );
 
