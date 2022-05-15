@@ -1,28 +1,14 @@
 import { Box, createTheme, CssBaseline, IconButton, ThemeProvider, Tooltip } from "@mui/material";
-import {
-  back,
-  ExplorerContext,
-  ExplorerProvider,
-  ExplorerProviderProps,
-} from "./context";
+import { back, ExplorerContext, ExplorerProvider, ExplorerProviderProps } from "./context";
 import ArrowBackRoundedIcon from "@mui/icons-material/ArrowBackRounded";
 
 import { useContext } from "react";
-import {
-  ASSET_PAGE,
-  CERT_PAGE,
-  ExplorerFooter,
-  PATH_PAGE,
-  QR_PAGE,
-  STATS_PAGE,
-} from "./components/Navigation";
-import {
-  CertificateRender,
-  StatisticsRender,
-  TraceabilityRender,
-} from "./components/Pages";
+import { ExplorerFooter } from "./components/Navigation";
+import { StatisticsRender } from "./components/Pages";
+import { CertificateView } from "./CertificateView";
 import { QRCodeView } from "./QRCodeView";
 import { AssetView } from "./AssetView";
+import { TraceabilityView } from "./TraceabilityView";
 
 export const explorerTheme = createTheme({
   typography: {
@@ -69,16 +55,16 @@ export const Explorer = (props: ExplorerProviderProps) => {
 const ExplorerRoutes = () => {
   const { state } = useContext(ExplorerContext);
 
-  switch (state.routes.current.page) {
-    case ASSET_PAGE:
+  switch (state.routes.current.route) {
+    case "ASSET":
       return <AssetView />;
-    case CERT_PAGE:
-      return <CertificateRender />;
-    case PATH_PAGE:
-      return <TraceabilityRender />;
-    case STATS_PAGE:
+    case "CERTIFICATES":
+      return <CertificateView />;
+    case "TRACEABILITY":
+      return <TraceabilityView />;
+    case "STATISTICS":
       return <StatisticsRender />;
-    case QR_PAGE:
+    case "QRCODE":
       return <QRCodeView />;
 
     default:

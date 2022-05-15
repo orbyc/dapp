@@ -6569,11 +6569,12 @@ orbyc-contracts@^1.0.4:
   resolved "https://registry.yarnpkg.com/orbyc-contracts/-/orbyc-contracts-1.0.4.tgz#fb589c0ddc836be50dfb15025fb0ddd2150f3433"
   integrity sha512-6NpA2d9u4VKFHArG46JBif2rcxi1BYMszAY7G3NsgIyUd/8NmY6asaHBoXPCOAvFgWGXf5ShTp84AL9OHlt1wQ==
 
-orbyc-core@^1.0.4:
-  version "1.0.4"
-  resolved "https://registry.yarnpkg.com/orbyc-core/-/orbyc-core-1.0.4.tgz#7443da8a6bd8a7741b7da5c4d2676d4f4c6c6fb4"
-  integrity sha512-MJDXkrL6CwEr5OtbidD59uKAInerO3LV6rQdzFO9B3NMiNSOEQ+X8yxE0EOoJytj/qsbxHNp7kbGpASIiPi0nA==
+orbyc-core@^1.1.1:
+  version "1.1.1"
+  resolved "https://registry.yarnpkg.com/orbyc-core/-/orbyc-core-1.1.1.tgz#d360e18c641b060d31b19672497a0fa9c4f64182"
+  integrity sha512-+6rzNQN+HVdpCf1ZGzC/0dHB0jAncGCLqZZqURsSsLMArm9t/q2Lfd2PVzh3Pa4oVumOzb5hKbQKLtluZn37LA==
   dependencies:
+    buffer "^6.0.3"
     ts-protoc-gen "^0.15.0"
 
 p-limit@^1.1.0:

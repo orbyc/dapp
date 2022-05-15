@@ -1,5 +1,5 @@
-
-import { Asset, Certificate, Movement } from "./models";
+import { Asset, Certificate, Movement } from "orbyc-core/pb/domain_pb";
+import { AccountMetadata } from "orbyc-core/pb/metadata_pb";
 
 export interface DataSource {
     erc245: {
@@ -8,6 +8,9 @@ export interface DataSource {
         getAssetTraceability: (id: number) => [number[], boolean, Error | null];
         getCertificate: (id: number) => [Certificate, boolean, Error | null];
         getMovement: (id: number) => [Movement, boolean, Error | null];
+    },
+    erc423: {
+        getAccount: (address: string) => [AccountMetadata, boolean, Error | null]
     }
 }
 
@@ -20,8 +23,12 @@ export interface ERC245Collection {
     traceabilities: { [id: number]: number[] }
 
 }
+export interface ERC423Collection {
+    accounts: { [address: string]: AccountMetadata }
 
-export function mockDataSource(erc245: ERC245Collection): DataSource {
+}
+
+export function mockDataSource(erc245: ERC245Collection, erc423: ERC423Collection): DataSource {
     return {
         erc245: {
             getAsset: (id) => [erc245.assets[id], false, null],
@@ -29,6 +36,9 @@ export function mockDataSource(erc245: ERC245Collection): DataSource {
             getAssetTraceability: (id) => [erc245.traceabilities[id], false, null],
             getCertificate: (id) => [erc245.certificates[id], false, null],
             getMovement: (id) => [erc245.movements[id], false, null]
+        },
+        erc423: {
+            getAccount: (address) => [erc423.accounts[address], false, null]
         }
     }
 }

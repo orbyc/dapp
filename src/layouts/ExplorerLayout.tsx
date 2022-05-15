@@ -1,10 +1,24 @@
 import { Box } from "@mui/system";
 import { Explorer } from "components/Explorer";
-import { blockchainMocks } from "components/Explorer/context/blockchainMocks";
-import { mockDataSource } from "components/Explorer/context/datasource";
-import React from "react";
+import {
+  ERC245Collection,
+  ERC423Collection,
+  mockDataSource,
+} from "components/Explorer/context/datasource";
 import { useParams } from "react-router-dom";
 
+const mockERC245: ERC245Collection = {
+  assets: {},
+  certificates: {},
+  compositions: {},
+  movements: {},
+  parents: {},
+  traceabilities: {},
+};
+
+const mockERC423: ERC423Collection = {
+  accounts: {},
+};
 
 export const ExplorerLayout = () => {
   const { asset_id } = useParams();
@@ -25,7 +39,7 @@ export const ExplorerLayout = () => {
         marginRight: "auto",
       }}
     >
-      <Explorer asset={parseInt(asset_id)} dataSource={mockDataSource(blockchainMocks)} />
+      <Explorer asset_id={parseInt(asset_id)} dataSource={mockDataSource(mockERC245, mockERC423)} />
     </Box>
   );
 };

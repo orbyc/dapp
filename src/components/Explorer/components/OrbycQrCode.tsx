@@ -6,12 +6,12 @@ import logo from "assets/identity/qr-logo.png";
 
 export function OrbycQrCode() {
   const { state } = useContext(ExplorerContext);
-  const { asset } = state.routes.current;
+  const { asset_id } = state.routes.current;
 
   const theme = useTheme();
   return (
     <QRCode
-      value={`orbyc.github.io/dapp/#/asset/${asset}`}
+      value={`orbyc.github.io/dapp/#/asset/${asset_id}`}
       bgColor={theme.palette.background.default}
       logoImage={logo}
       fgColor="#0A785A"

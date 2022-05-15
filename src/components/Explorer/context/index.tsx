@@ -4,7 +4,9 @@ import { DataSource } from "./datasource";
 /*
     CONTEXT TYPE DEFINITIONS
 */
-type Page = { page: string; asset: number };
+export type Route = "ASSET" | "CERTIFICATES" | "TRACEABILITY" | "STATISTICS" | "ISSUER" | "QRCODE";
+
+type Page = { route: Route; asset_id: number };
 
 interface Context {
   dataSource: DataSource;
@@ -24,9 +26,9 @@ interface Payload<T> extends Action {
 
 const NAVIGATE = "NAVIGATE";
 
-export const navigate = (asset: number, page: string): Payload<Page> => ({
+export const navigate = (asset_id: number, route: Route): Payload<Page> => ({
   type: NAVIGATE,
-  payload: { page, asset },
+  payload: { route, asset_id },
 });
 
 const BACK = "BACK";
@@ -65,10 +67,10 @@ interface ContextReducer {
 export const ExplorerContext = createContext<ContextReducer>({} as ContextReducer);
 
 export interface ExplorerProviderProps {
-  children?: React.ReactNode
+  children?: React.ReactNode;
   dataSource: DataSource;
-  asset: number;
-  page?: string;
+  asset_id: number;
+  route?: Route;
 }
 
 /*
@@ -78,7 +80,7 @@ export const ExplorerProvider: React.FC<ExplorerProviderProps> = ({ children, ..
   const initialState: Context = {
     dataSource: props.dataSource,
     routes: {
-      current: { asset: props.asset, page: props.page || "ASSET" },
+      current: { asset_id: props.asset_id, route: props.route || "ASSET" },
       history: [],
     },
   };

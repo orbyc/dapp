@@ -4,6 +4,8 @@ import mapImage from "assets/explorer/map_updated.png";
 import { weightConvert } from "utils/weight";
 import LocationOnRoundedIcon from "@mui/icons-material/LocationOnRounded";
 import { ExplorerContext } from "../context";
+import { AssetMetadata } from "orbyc-core/pb/metadata_pb";
+import { decodeHex } from "orbyc-core/utils/encoding";
 
 interface HeadingPropertyProps {
   label: string;
@@ -37,12 +39,15 @@ export function HeadingProperty(props: HeadingPropertyProps) {
 
 export const ExplorerHeader: React.FC = () => {
   const { state } = useContext(ExplorerContext);
-  const { asset } = state.routes.current;
+  const { asset_id } = state.routes.current;
   const { erc245 } = state.dataSource;
 
-  const [item] = erc245.getAsset(asset);
+  const [asset] = erc245.getAsset(asset_id);
+  const metadata = AssetMetadata.deserializeBinary(decodeHex(asset.getMetadata()));
 
-  const { weight, unit } = weightConvert(item.co2);
+  // const [traceability] = erc245.getAssetTraceability(asset_id)
+
+  const { weight, unit } = weightConvert(asset.getCo2e());
 
   return (
     <Box
@@ -51,7 +56,7 @@ export const ExplorerHeader: React.FC = () => {
         borderBottomLeftRadius: 40,
         borderBottomRightRadius: 40,
         padding: 3,
-        backgroundImage: `url(${item.metadata.backImage})`,
+        backgroundImage: `url(${metadata.getBackground()})`,
         backgroundSize: "cover",
       }}
     >
@@ -66,7 +71,7 @@ export const ExplorerHeader: React.FC = () => {
             lineHeight: 0.7,
           }}
         >
-          {item.metadata.heading}
+          {metadata.getHeader()}
         </Typography>
         <Box
           bgcolor={"white"}

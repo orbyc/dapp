@@ -1,17 +1,34 @@
 import React, { useContext } from "react";
-import { Typography } from "@mui/material";
+import { Stack, Typography } from "@mui/material";
 import { ScrollMenu } from "react-horizontal-scrolling-menu";
 import { AssetParent } from "./components/AssetParent";
 import { ExplorerHeader } from "./components/HeaderInfo";
 import { AssetOffer } from "./components/AssetOffer";
 import { ExplorerContext } from "./context";
+import { AssetProperty } from "./components/AssetProperty";
+import { AssetMetadata } from "orbyc-core/pb/metadata_pb";
+import { decodeHex } from "orbyc-core/utils/encoding";
 
 export const AssetProperties: React.FC = () => {
   const { state } = useContext(ExplorerContext);
-  const { asset } = state.routes.current;
+  const { asset_id } = state.routes.current;
   const { erc245 } = state.dataSource;
 
-  const [[parents]] = erc245.getAssetComposition(asset);
+  const [[parents]] = erc245.getAssetComposition(asset_id);
+  const [asset] = erc245.getAsset(asset_id);
+  const metadata = AssetMetadata.deserializeBinary(decodeHex(asset.getMetadata()));
+
+  const properties = (
+    <>
+      <ScrollMenu>
+        <Stack direction="row" spacing={2} ml={2} mt={2}>
+          {metadata.getPropertiesList().map((prop) => (
+            <AssetProperty asset_id={asset_id} property={prop} />
+          ))}
+        </Stack>
+      </ScrollMenu>
+    </>
+  );
 
   const composition = (
     <>
@@ -26,7 +43,12 @@ export const AssetProperties: React.FC = () => {
     </>
   );
 
-  return <>{parents.length > 0 && composition}</>;
+  return (
+    <>
+      {properties}
+      {parents.length > 0 && composition}
+    </>
+  );
 };
 
 export const AssetView = () => (

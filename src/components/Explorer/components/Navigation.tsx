@@ -7,28 +7,22 @@ import BarChartRoundedIcon from "@mui/icons-material/BarChartRounded";
 import FeedRoundedIcon from "@mui/icons-material/FeedRounded";
 import { IconButton } from "@mui/material";
 import { Button } from "./Button";
-import { ExplorerContext, navigate } from "components/Explorer/context";
-
-export const ASSET_PAGE = "ASSET";
-export const CERT_PAGE = "CERT";
-export const STATS_PAGE = "STATS";
-export const PATH_PAGE = "PATH";
-export const QR_PAGE = "QR";
+import { ExplorerContext, navigate, Route } from "components/Explorer/context";
 
 interface NavButtonProps {
   children?: React.ReactNode;
-  path: string;
+  path: Route;
   text: string;
   active?: boolean;
 }
 
 export const NavButton: React.FC<NavButtonProps> = ({ active, path, text, children }) => {
   const { state, dispatch } = useContext(ExplorerContext);
-  const { asset, page } = state.routes.current;
+  const { asset_id, route } = state.routes.current;
 
-  const handleNavigate = (route: string) => () => dispatch(navigate(asset, route));
+  const handleNavigate = (route: Route) => () => dispatch(navigate(asset_id, route));
 
-  if (active || path === page)
+  if (active || path === route)
     return (
       <Button startIcon={children} variant="contained" size="large" color="secondary">
         {text}
@@ -56,19 +50,19 @@ export const ExplorerFooter = () => (
       }}
     >
       <Grid container justifyContent={"space-evenly"} alignItems={"center"} color={"#D5DAE1"} p={1}>
-        <NavButton text="Asset" path={ASSET_PAGE}>
+        <NavButton text="Asset" path={"ASSET"}>
           <FeedRoundedIcon sx={{ cursor: "pointer" }} />
         </NavButton>
-        <NavButton text="Certificate" path={CERT_PAGE}>
+        <NavButton text="Certificate" path={"CERTIFICATES"}>
           <VerifiedUserRoundedIcon sx={{ cursor: "pointer" }} />
         </NavButton>
-        <NavButton text="Traceability" path={PATH_PAGE}>
+        <NavButton text="Traceability" path={"TRACEABILITY"}>
           <TimelineRoundedIcon sx={{ cursor: "pointer" }} />
         </NavButton>
-        <NavButton text="Statistics" path={STATS_PAGE}>
+        <NavButton text="Statistics" path={"STATISTICS"}>
           <BarChartRoundedIcon sx={{ cursor: "pointer" }} />
         </NavButton>
-        <NavButton text="QRCode" path={QR_PAGE}>
+        <NavButton text="QRCode" path={"QRCODE"}>
           <CropFreeRoundedIcon />
         </NavButton>
       </Grid>

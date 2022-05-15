@@ -4,6 +4,8 @@ import { Grid, Typography } from "@mui/material";
 import { useContext } from "react";
 import { ExplorerContext, navigate } from "../context";
 import { ExplorerCard } from "./ExplorerCard";
+import { AssetMetadata } from "orbyc-core/pb/metadata_pb";
+import { decodeHex } from "orbyc-core/utils/encoding";
 
 interface AssetElementProps {
   id: number;
@@ -11,10 +13,12 @@ interface AssetElementProps {
 
 export const AssetParent: React.FC<AssetElementProps> = ({ id }) => {
   const { state, dispatch } = useContext(ExplorerContext);
-  const { page } = state.routes.current;
-  const { erc245 } = state.dataSource;
+  const { route: page } = state.routes.current;
+  const { erc245, erc423 } = state.dataSource;
 
   const [asset] = erc245.getAsset(id);
+  const metadata = AssetMetadata.deserializeBinary(decodeHex(asset.getMetadata()));
+  const [issuer] = erc423.getAccount(asset.getIssuer());
 
   const handleNavigate = () => dispatch(navigate(id, page));
 
@@ -34,7 +38,7 @@ export const AssetParent: React.FC<AssetElementProps> = ({ id }) => {
             height={60}
             borderRadius={3}
             marginRight={2}
-            sx={{ backgroundImage: `url(${asset.metadata.image})`, backgroundSize: "cover" }}
+            sx={{ backgroundImage: `url(${metadata.getBackground()})`, backgroundSize: "cover" }}
           />
         </Grid>
         <Grid item>
@@ -46,10 +50,10 @@ export const AssetParent: React.FC<AssetElementProps> = ({ id }) => {
             height={60}
           >
             <Typography variant="caption" lineHeight={1}>
-              {asset.metadata.fabricator}
+              {issuer.getName()}
             </Typography>
             <Typography variant="h5" lineHeight={1}>
-              {asset.name}
+              {metadata.getName()}
             </Typography>
             {/* <Typography
               color={theme.palette.primary.main}
