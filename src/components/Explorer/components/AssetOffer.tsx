@@ -4,16 +4,29 @@ import ArrowForwardRoundedIcon from "@mui/icons-material/ArrowForwardRounded";
 import LoyaltyRoundedIcon from "@mui/icons-material/LoyaltyRounded";
 import { Button } from "./Button";
 import { useContext } from "react";
-import { ExplorerContext } from "../context";
+import { ExplorerContext } from "../context/explorer_context";
 import { AssetMetadata } from "orbyc-core/pb/metadata_pb";
 import { decodeHex } from "orbyc-core/utils/encoding";
+import useFetch from "utils/hooks";
 
 export function AssetOffer() {
-  const { state } = useContext(ExplorerContext);
-  const { asset_id } = state.routes.current;
-  const { erc245 } = state.dataSource;
+  const {
+    state: {
+      routes: { current },
+      dataSource,
+    },
+  } = useContext(ExplorerContext);
 
-  const [asset] = erc245.getAsset(asset_id);
+  const { data: asset, loading, error } = useFetch(dataSource.erc245.getAsset(current.asset_id));
+
+  if (loading || asset == null) {
+    return <>loading...</>;
+  }
+
+  if (error != null) {
+    return <>{error.message}</>;
+  }
+
   const metadata = AssetMetadata.deserializeBinary(decodeHex(asset.getMetadata()));
 
   return (
@@ -42,10 +55,7 @@ export function AssetOffer() {
           minHeight={100}
         >
           <Button startIcon={<LoyaltyRoundedIcon />}>Sale 50% off</Button>
-          <Typography variant={"h5"}>{metadata.getName(
-
-            
-          )}</Typography>
+          <Typography variant={"h5"}>{metadata.getName()}</Typography>
           <Typography lineHeight={1}>
             Check it out in our marketplace. Help to save the planet.
           </Typography>

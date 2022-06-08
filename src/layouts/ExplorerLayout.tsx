@@ -9,6 +9,7 @@ import { useParams } from "react-router-dom";
 
 const mockERC245: ERC245Collection = {
   assets: {},
+  assetCertificates: {},
   certificates: {},
   compositions: {},
   movements: {},

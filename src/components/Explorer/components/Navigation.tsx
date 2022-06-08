@@ -7,7 +7,7 @@ import BarChartRoundedIcon from "@mui/icons-material/BarChartRounded";
 import FeedRoundedIcon from "@mui/icons-material/FeedRounded";
 import { IconButton } from "@mui/material";
 import { Button } from "./Button";
-import { ExplorerContext, navigate, Route } from "components/Explorer/context";
+import { ExplorerContext, navigate, Route } from "components/Explorer/context/explorer_context";
 
 interface NavButtonProps {
   children?: React.ReactNode;

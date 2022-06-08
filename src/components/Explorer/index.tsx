@@ -1,5 +1,5 @@
 import { Box, createTheme, CssBaseline, IconButton, ThemeProvider, Tooltip } from "@mui/material";
-import { back, ExplorerContext, ExplorerProvider, ExplorerProviderProps } from "./context";
+import { back, ExplorerContext, ExplorerProvider, ExplorerProviderProps } from "./context/explorer_context";
 import ArrowBackRoundedIcon from "@mui/icons-material/ArrowBackRounded";
 
 import { useContext } from "react";

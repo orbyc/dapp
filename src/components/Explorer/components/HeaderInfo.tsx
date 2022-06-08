@@ -3,7 +3,7 @@ import React, { useContext } from "react";
 import mapImage from "assets/explorer/map_updated.png";
 import { weightConvert } from "utils/weight";
 import LocationOnRoundedIcon from "@mui/icons-material/LocationOnRounded";
-import { ExplorerContext } from "../context";
+import { ExplorerContext } from "../context/explorer_context";
 import { AssetMetadata } from "orbyc-core/pb/metadata_pb";
 import { decodeHex } from "orbyc-core/utils/encoding";
 
