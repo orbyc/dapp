@@ -5,7 +5,7 @@ import reportWebVitals from "./reportWebVitals";
 // import { Asset } from "orbyc-core/pb/domain_pb";
 
 import { AppRoutes } from "routes";
-import "index.css"
+import "index.css";
 
 // const App = () => {
 //   const asset = new Asset();
@@ -34,6 +34,7 @@ import "index.css"
 // };
 
 const root = ReactDOM.createRoot(document.getElementById("root") as HTMLElement);
+
 root.render(
   <React.StrictMode>
     <AppRoutes />

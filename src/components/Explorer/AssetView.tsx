@@ -6,8 +6,10 @@ import { ExplorerHeader } from "./components/HeaderInfo";
 import { AssetOffer } from "./components/AssetOffer";
 import { ExplorerContext } from "./context/explorer_context";
 import { AssetProperty } from "./components/AssetProperty";
-import useFetch from "utils/hooks";
-import { WithAssetMetadata } from "utils/helpers";
+import {useFetch} from "utils/hooks";
+import { Loading } from "components/Loading";
+import { AssetMetadata } from "orbyc-core/pb/metadata_pb";
+import { decodeHex } from "orbyc-core/utils/encoding";
 
 export const AssetProperties: React.FC = () => {
   const { state } = useContext(ExplorerContext);
@@ -18,23 +20,20 @@ export const AssetProperties: React.FC = () => {
   const { data: asset } = useFetch(erc245.getAsset(asset_id));
 
   if (!composition || !asset) {
-    return <>loading...</>;
+    return <Loading />;
   }
 
-  const [parents, percent] = composition;
+  const [parents] = composition;
+  const metadata = AssetMetadata.deserializeBinary(decodeHex(asset.getMetadata()));
 
   const properties = (
-    <WithAssetMetadata asset={asset}>
-      {(metadata) => (
-        <ScrollMenu>
-          <Stack direction="row" spacing={2} ml={2} mt={2}>
-            {metadata.getPropertiesList().map((prop) => (
-              <AssetProperty asset_id={asset_id} property={prop} />
-            ))}
-          </Stack>
-        </ScrollMenu>
-      )}
-    </WithAssetMetadata>
+    <ScrollMenu>
+      <Stack direction="row" spacing={2} ml={2} mt={2}>
+        {metadata.getPropertiesList().map((prop) => (
+          <AssetProperty asset_id={asset_id} property={prop} />
+        ))}
+      </Stack>
+    </ScrollMenu>
   );
 
   const compositionData = (
@@ -52,7 +51,7 @@ export const AssetProperties: React.FC = () => {
 
   return (
     <>
-      {properties}
+      {metadata.getPropertiesList().length > 0 && properties}
       {parents.length > 0 && compositionData}
     </>
   );

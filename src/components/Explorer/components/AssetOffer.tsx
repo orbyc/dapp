@@ -7,7 +7,7 @@ import { useContext } from "react";
 import { ExplorerContext } from "../context/explorer_context";
 import { AssetMetadata } from "orbyc-core/pb/metadata_pb";
 import { decodeHex } from "orbyc-core/utils/encoding";
-import useFetch from "utils/hooks";
+import {useFetch} from "utils/hooks";
 
 export function AssetOffer() {
   const {

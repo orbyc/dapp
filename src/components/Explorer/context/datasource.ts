@@ -30,15 +30,18 @@ export interface ERC423Collection {
 
 }
 
-export function mockDataSource(erc245: ERC245Collection, erc423: ERC423Collection): DataSource {
+/*
+    MOCK DATA SOURCE
+*/
+export function mockDataSource(erc245: ERC245Collection, erc423: ERC423Collection, timeout: number = 1000): DataSource {
     return {
         erc245: {
-            getAsset: (id) => Promise.resolve(erc245.assets[id]),
-            getAssetCertificates: (id) => Promise.resolve(erc245.assetCertificates[id]),
-            getAssetComposition: (id) => Promise.resolve([erc245.parents[id], erc245.compositions[id]]),
-            getAssetTraceability: (id) => Promise.resolve(erc245.traceabilities[id]),
-            getCertificate: (id) => Promise.resolve(erc245.certificates[id]),
-            getMovement: (id) => Promise.resolve(erc245.movements[id])
+            getAsset: (id) => new Promise(resolve => setTimeout(() => resolve(erc245.assets[id]), timeout)),
+            getAssetCertificates: (id) => new Promise(resolve => setTimeout(() => resolve(erc245.assetCertificates[id]), timeout)),
+            getAssetComposition: (id) => new Promise(resolve => setTimeout(() => resolve([erc245.parents[id], erc245.compositions[id]]), timeout)),
+            getAssetTraceability: (id) => new Promise(resolve => setTimeout(() => resolve(erc245.traceabilities[id]), timeout)),
+            getCertificate: (id) => new Promise(resolve => setTimeout(() => resolve(erc245.certificates[id]), timeout)),
+            getMovement: (id) => new Promise(resolve => setTimeout(() => resolve(erc245.movements[id]), timeout)),
         },
         erc423: {
             getAccount: (address) => Promise.resolve(erc423.accounts[address])

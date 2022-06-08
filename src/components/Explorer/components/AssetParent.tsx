@@ -3,7 +3,11 @@ import { Grid, Typography } from "@mui/material";
 import { useContext } from "react";
 import { ExplorerContext, navigate } from "../context/explorer_context";
 import { ExplorerCard } from "./ExplorerCard";
-import useFetch from "utils/hooks";
+import {useFetch} from "utils/hooks";
+import { AssetMetadata } from "orbyc-core/pb/metadata_pb";
+import { decodeHex } from "orbyc-core/utils/encoding";
+import { Asset } from "orbyc-core/pb/domain_pb";
+import { Loading } from "components/Loading";
 
 interface AssetElementProps {
   id: number;
@@ -14,12 +18,15 @@ export const AssetParent: React.FC<AssetElementProps> = ({ id }) => {
   const { route: page } = state.routes.current;
   const { erc245 } = state.dataSource;
 
+  const handleNavigate = () => dispatch(navigate(id, page));
+
   const { data: asset } = useFetch(erc245.getAsset(id));
+
   if (!asset) {
-    return <>loading asset...</>;
+    return <Loading />;
   }
 
-  const handleNavigate = () => dispatch(navigate(id, page));
+  const metadata = AssetMetadata.deserializeBinary(decodeHex(asset.getMetadata()));
 
   return (
     <ExplorerCard
@@ -51,9 +58,7 @@ export const AssetParent: React.FC<AssetElementProps> = ({ id }) => {
             alignItems="flex-start"
             height={60}
           >
-            <Typography variant="caption" lineHeight={1}>
-              {issuer.getName()}
-            </Typography>
+            <AssetIssuerName asset={asset} />
             <Typography variant="h5" lineHeight={1}>
               {metadata.getName()}
             </Typography>
@@ -69,5 +74,29 @@ export const AssetParent: React.FC<AssetElementProps> = ({ id }) => {
         </Grid>
       </Grid>
     </ExplorerCard>
+  );
+};
+
+interface AssetIssuerNameProps {
+  asset: Asset;
+}
+
+const AssetIssuerName = (props: AssetIssuerNameProps) => {
+  const {
+    state: {
+      dataSource: { erc423 },
+    },
+  } = useContext(ExplorerContext);
+
+  const { data, loading } = useFetch(erc423.getAccount(props.asset.getIssuer()));
+
+  if (!data || loading) {
+    return <Loading />;
+  }
+
+  return (
+    <Typography variant="h5" lineHeight={1}>
+      {data?.getName()}
+    </Typography>
   );
 };

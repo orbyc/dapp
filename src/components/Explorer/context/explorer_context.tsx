@@ -6,6 +6,8 @@ import { DataSource } from "./datasource";
 */
 export type Route = "ASSET" | "CERTIFICATES" | "TRACEABILITY" | "STATISTICS" | "ISSUER" | "QRCODE";
 
+type ActionType = "NAVIGATE" | "BACK";
+
 type Page = { route: Route; asset_id: number };
 
 interface Context {
@@ -17,30 +19,26 @@ interface Context {
     ACTIONS
 */
 interface Action {
-  type: string;
+  type: ActionType;
 }
 
 interface Payload<T> extends Action {
   payload: T;
 }
 
-const NAVIGATE = "NAVIGATE";
-
 export const navigate = (asset_id: number, route: Route): Payload<Page> => ({
-  type: NAVIGATE,
+  type: "NAVIGATE",
   payload: { route, asset_id },
 });
 
-const BACK = "BACK";
-
-export const back = (): Action => ({ type: BACK });
+export const back = (): Action => ({ type: "BACK" });
 
 /*
     REDUCER
 */
 function reducer(state: Context, action: Action): Context {
   switch (action.type) {
-    case NAVIGATE:
+    case "NAVIGATE":
       const { payload: page } = action as Payload<Page>;
       return {
         ...state,
@@ -49,7 +47,7 @@ function reducer(state: Context, action: Action): Context {
           current: page,
         },
       };
-    case BACK:
+    case "BACK":
       const current = state.routes.history.pop();
       if (current) return { ...state, routes: { ...state.routes, current } };
   }

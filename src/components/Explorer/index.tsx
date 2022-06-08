@@ -1,5 +1,10 @@
 import { Box, createTheme, CssBaseline, IconButton, ThemeProvider, Tooltip } from "@mui/material";
-import { back, ExplorerContext, ExplorerProvider, ExplorerProviderProps } from "./context/explorer_context";
+import {
+  back,
+  ExplorerContext,
+  ExplorerProvider,
+  ExplorerProviderProps,
+} from "./context/explorer_context";
 import ArrowBackRoundedIcon from "@mui/icons-material/ArrowBackRounded";
 
 import { useContext } from "react";
@@ -37,6 +42,7 @@ export const Explorer = (props: ExplorerProviderProps) => {
     <ExplorerProvider {...props}>
       <ThemeProvider theme={explorerTheme}>
         <CssBaseline />
+
         <Box
           bgcolor={explorerTheme.palette.background.default}
           display={"flex"}

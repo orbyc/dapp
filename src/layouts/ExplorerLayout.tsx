@@ -6,15 +6,17 @@ import {
   mockDataSource,
 } from "components/Explorer/context/datasource";
 import { useParams } from "react-router-dom";
+import { getTestAsset } from "./mockCollection";
 
 const mockERC245: ERC245Collection = {
-  assets: {},
-  assetCertificates: {},
+  assets: { 1: getTestAsset() },
+  assetCertificates: { 1: [] },
+  compositions: { 1: [] },
+  parents: { 1: [] },
+  traceabilities: { 1: [] },
+
   certificates: {},
-  compositions: {},
   movements: {},
-  parents: {},
-  traceabilities: {},
 };
 
 const mockERC423: ERC423Collection = {

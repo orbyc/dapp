@@ -6,6 +6,8 @@ import LocationOnRoundedIcon from "@mui/icons-material/LocationOnRounded";
 import { ExplorerContext } from "../context/explorer_context";
 import { AssetMetadata } from "orbyc-core/pb/metadata_pb";
 import { decodeHex } from "orbyc-core/utils/encoding";
+import { useFetch } from "utils/hooks";
+import { Loading } from "components/Loading";
 
 interface HeadingPropertyProps {
   label: string;
@@ -38,15 +40,22 @@ export function HeadingProperty(props: HeadingPropertyProps) {
 }
 
 export const ExplorerHeader: React.FC = () => {
-  const { state } = useContext(ExplorerContext);
-  const { asset_id } = state.routes.current;
-  const { erc245 } = state.dataSource;
+  const {
+    state: {
+      dataSource: { erc245 },
+      routes: {
+        current: { asset_id },
+      },
+    },
+  } = useContext(ExplorerContext);
 
-  const [asset] = erc245.getAsset(asset_id);
+  const { data: asset } = useFetch(erc245.getAsset(asset_id));
+
+  if (!asset) {
+    return <Loading />;
+  }
+
   const metadata = AssetMetadata.deserializeBinary(decodeHex(asset.getMetadata()));
-
-  // const [traceability] = erc245.getAssetTraceability(asset_id)
-
   const { weight, unit } = weightConvert(asset.getCo2e());
 
   return (
@@ -56,7 +65,7 @@ export const ExplorerHeader: React.FC = () => {
         borderBottomLeftRadius: 40,
         borderBottomRightRadius: 40,
         padding: 3,
-        backgroundImage: `url(${metadata.getBackground()})`,
+        backgroundImage: `url(${metadata.getBackground()?.getAttachment()})`,
         backgroundSize: "cover",
       }}
     >

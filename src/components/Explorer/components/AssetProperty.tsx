@@ -1,8 +1,8 @@
-import React from "react";
+       import React from "react";
 import { FabIcon, LongButton } from "./Button";
 import { Stack, Tooltip, Typography } from "@mui/material";
 import * as icons from "@mui/icons-material";
-import { IconNames } from "../context/models";
+import { IconNames } from "../../../utils/models";
 import { AssetMetadata } from "orbyc-core/pb/metadata_pb";
 
 interface AssetElementProps {
