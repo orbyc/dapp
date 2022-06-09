@@ -1,7 +1,3 @@
-import React from 'react'
-
 export default function Assets() {
-  return (
-    <div>Assets</div>
-  )
+  return <div>Assets</div>;
 }

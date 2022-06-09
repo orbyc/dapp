@@ -4,7 +4,7 @@ import { ScrollMenu } from "react-horizontal-scrolling-menu";
 import { AssetParent } from "./components/AssetParent";
 import { ExplorerHeader } from "./components/HeaderInfo";
 import { AssetOffer } from "./components/AssetOffer";
-import { ExplorerContext } from "./context/explorer_context";
+import { ExplorerContext } from "./context/explorerContext";
 import { AssetProperty } from "./components/AssetProperty";
 import {useFetch} from "utils/hooks";
 import { Loading } from "components/Loading";

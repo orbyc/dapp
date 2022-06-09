@@ -4,7 +4,7 @@ import ArrowForwardRoundedIcon from "@mui/icons-material/ArrowForwardRounded";
 import LoyaltyRoundedIcon from "@mui/icons-material/LoyaltyRounded";
 import { Button } from "./Button";
 import { useContext } from "react";
-import { ExplorerContext } from "../context/explorer_context";
+import { ExplorerContext } from "../context/explorerContext";
 import { AssetMetadata } from "orbyc-core/pb/metadata_pb";
 import { decodeHex } from "orbyc-core/utils/encoding";
 import {useFetch} from "utils/hooks";

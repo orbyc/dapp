@@ -1,5 +1,5 @@
 import { Outlet } from "react-router-dom";
 
-export function Dashboard() {
+export function DashboardLayout() {
   return <Outlet />;
 }

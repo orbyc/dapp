@@ -1,10 +1,5 @@
 import { Box, createTheme, CssBaseline, IconButton, ThemeProvider, Tooltip } from "@mui/material";
-import {
-  back,
-  ExplorerContext,
-  ExplorerProvider,
-  ExplorerProviderProps,
-} from "./context/explorer_context";
+import { back, ExplorerContext } from "./context/explorerContext";
 import ArrowBackRoundedIcon from "@mui/icons-material/ArrowBackRounded";
 
 import { useContext } from "react";
@@ -37,24 +32,15 @@ export const explorerTheme = createTheme({
   },
 });
 
-export const Explorer = (props: ExplorerProviderProps) => {
+const ExplorerBack = () => {
+  const { dispatch } = useContext(ExplorerContext);
+  const handleBack = () => dispatch(back());
   return (
-    <ExplorerProvider {...props}>
-      <ThemeProvider theme={explorerTheme}>
-        <CssBaseline />
-
-        <Box
-          bgcolor={explorerTheme.palette.background.default}
-          display={"flex"}
-          flexDirection="column"
-          flexGrow={1}
-        >
-          <ExplorerBack />
-          <ExplorerRoutes />
-          <ExplorerFooter />
-        </Box>
-      </ThemeProvider>
-    </ExplorerProvider>
+    <Tooltip title="back" sx={{ position: "absolute", color: "white", top: 10, left: 15 }}>
+      <IconButton onClick={handleBack}>
+        <ArrowBackRoundedIcon />
+      </IconButton>
+    </Tooltip>
   );
 };
 
@@ -78,14 +64,20 @@ const ExplorerRoutes = () => {
   }
 };
 
-const ExplorerBack = () => {
-  const { dispatch } = useContext(ExplorerContext);
-  const handleBack = () => dispatch(back());
+export function Explorer() {
   return (
-    <Tooltip title="back" sx={{ position: "absolute", color: "white", top: 10, left: 15 }}>
-      <IconButton onClick={handleBack}>
-        <ArrowBackRoundedIcon />
-      </IconButton>
-    </Tooltip>
+    <ThemeProvider theme={explorerTheme}>
+      <CssBaseline />
+      <Box
+        bgcolor={explorerTheme.palette.background.default}
+        display={"flex"}
+        flexDirection="column"
+        flexGrow={1}
+      >
+        <ExplorerBack />
+        <ExplorerRoutes />
+        <ExplorerFooter />
+      </Box>
+    </ThemeProvider>
   );
-};
+}

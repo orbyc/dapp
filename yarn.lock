@@ -7016,10 +7016,10 @@ orbyc-contracts@^1.0.4:
   resolved "https://registry.yarnpkg.com/orbyc-contracts/-/orbyc-contracts-1.0.4.tgz#fb589c0ddc836be50dfb15025fb0ddd2150f3433"
   integrity sha512-6NpA2d9u4VKFHArG46JBif2rcxi1BYMszAY7G3NsgIyUd/8NmY6asaHBoXPCOAvFgWGXf5ShTp84AL9OHlt1wQ==
 
-orbyc-core@^1.1.1:
-  version "1.1.1"
-  resolved "https://registry.yarnpkg.com/orbyc-core/-/orbyc-core-1.1.1.tgz#d360e18c641b060d31b19672497a0fa9c4f64182"
-  integrity sha512-+6rzNQN+HVdpCf1ZGzC/0dHB0jAncGCLqZZqURsSsLMArm9t/q2Lfd2PVzh3Pa4oVumOzb5hKbQKLtluZn37LA==
+orbyc-core@^1.3.1:
+  version "1.3.1"
+  resolved "https://registry.yarnpkg.com/orbyc-core/-/orbyc-core-1.3.1.tgz#cd0988794f4d1fcd3b95884a4c92355375d172c0"
+  integrity sha512-nin8le3SJNcrqwOeMd/PKZAWu7RlmQlH34jxo8eSi5G4wMpPEaqruDxu/T8QjS8ujclIfllwH8AFQi6ld9JR4w==
   dependencies:
     buffer "^6.0.3"
     ts-protoc-gen "^0.15.0"

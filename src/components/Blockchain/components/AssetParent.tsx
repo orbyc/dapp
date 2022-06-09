@@ -1,7 +1,7 @@
 import { Box } from "@mui/system";
 import { Grid, Typography } from "@mui/material";
 import { useContext } from "react";
-import { ExplorerContext, navigate } from "../context/explorer_context";
+import { ExplorerContext, navigate } from "../context/explorerContext";
 import { ExplorerCard } from "./ExplorerCard";
 import {useFetch} from "utils/hooks";
 import { AssetMetadata } from "orbyc-core/pb/metadata_pb";

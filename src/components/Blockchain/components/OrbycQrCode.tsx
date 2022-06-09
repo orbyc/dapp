@@ -1,6 +1,6 @@
 import { useTheme } from "@mui/material";
 import { useContext } from "react";
-import { ExplorerContext } from "components/Explorer/context/explorer_context";
+import { ExplorerContext } from "components/Blockchain/context/explorerContext";
 import { QRCode } from "react-qrcode-logo";
 import logo from "assets/identity/qr-logo.png";
 

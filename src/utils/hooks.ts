@@ -21,7 +21,7 @@ export function useFetch<T>(source: Promise<T>): FetchResult<T> {
                 setLoading(false)
                 dispatch(pushNotification({ message: e, type: "ERROR" }))
             })
-    }, [source, setData, setLoading, setError, dispatch])
+    }, [setData, setLoading, setError, dispatch])
 
     return { data, loading, error }
 }
