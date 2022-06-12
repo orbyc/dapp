@@ -18,7 +18,7 @@ interface NavButtonProps {
 
 export const NavButton: React.FC<NavButtonProps> = ({ active, path, text, children }) => {
   const { state, dispatch } = useContext(ExplorerContext);
-  const { asset_id, route } = state.routes.current;
+  const { id: asset_id, route } = state.routes.current;
 
   const handleNavigate = (route: Route) => () => dispatch(navigate(asset_id, route));
 

@@ -6,14 +6,14 @@ import { ExplorerHeader } from "./components/HeaderInfo";
 import { AssetOffer } from "./components/AssetOffer";
 import { ExplorerContext } from "./context/explorerContext";
 import { AssetProperty } from "./components/AssetProperty";
-import {useFetch} from "utils/hooks";
+import { useFetch } from "utils/hooks";
 import { Loading } from "components/Loading";
 import { AssetMetadata } from "orbyc-core/pb/metadata_pb";
 import { decodeHex } from "orbyc-core/utils/encoding";
 
 export const AssetProperties: React.FC = () => {
   const { state } = useContext(ExplorerContext);
-  const { asset_id } = state.routes.current;
+  const { id: asset_id } = state.routes.current;
   const { erc245 } = state.dataSource;
 
   const { data: composition } = useFetch(erc245.getAssetComposition(asset_id));

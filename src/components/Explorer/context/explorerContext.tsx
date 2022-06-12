@@ -4,11 +4,19 @@ import { DataSource } from "./datasource";
 /*
     CONTEXT TYPE DEFINITIONS
 */
-export type Route = "ASSET" | "CERTIFICATES" | "TRACEABILITY" | "STATISTICS" | "ISSUER" | "QRCODE";
+export type Route =
+  | "ASSET"
+  | "CERTIFICATES"
+  | "TRACEABILITY"
+  | "STATISTICS"
+  | "ISSUER"
+  | "QRCODE"
+  | "CERTIFICATE"
+  | "MOVEMENT";
 
 type ActionType = "NAVIGATE" | "BACK";
 
-type Page = { route: Route; asset_id: number };
+type Page = { route: Route; id: number };
 
 interface Context {
   dataSource: DataSource;
@@ -26,9 +34,9 @@ interface Payload<T> extends Action {
   payload: T;
 }
 
-export const navigate = (asset_id: number, route: Route): Payload<Page> => ({
+export const navigate = (id: number, route: Route): Payload<Page> => ({
   type: "NAVIGATE",
-  payload: { route, asset_id },
+  payload: { route, id },
 });
 
 export const back = (): Action => ({ type: "BACK" });
@@ -67,8 +75,8 @@ export const ExplorerContext = createContext<ContextReducer>({} as ContextReduce
 export interface ExplorerProviderProps {
   children?: React.ReactNode;
   dataSource: DataSource;
-  asset_id: number;
-  route?: Route;
+  id: number;
+  route: Route;
 }
 
 /*
@@ -78,7 +86,7 @@ export const ExplorerProvider: React.FC<ExplorerProviderProps> = ({ children, ..
   const initialState: Context = {
     dataSource: props.dataSource,
     routes: {
-      current: { asset_id: props.asset_id, route: props.route || "ASSET" },
+      current: { id: props.id, route: props.route },
       history: [],
     },
   };

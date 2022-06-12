@@ -1,8 +1,8 @@
 import { Box } from "@mui/system";
 import { ERC245Collection, ERC423Collection } from "components/Explorer/context/datasource";
-import { Outlet, useParams } from "react-router-dom";
+import { Navigate, Outlet, useSearchParams } from "react-router-dom";
 import { getMockAsset, getMockMovement, mockDataSource } from "./context/datasourceMock";
-import { ExplorerProvider } from "./context/explorerContext";
+import { ExplorerProvider, Route } from "./context/explorerContext";
 
 const mockERC245: ERC245Collection = {
   assets: { 1: getMockAsset() },
@@ -23,10 +23,13 @@ const mockERC423: ERC423Collection = {
 };
 
 export const ExplorerLayout = () => {
-  const { asset_id } = useParams();
+  const [searchParams] = useSearchParams();
 
-  if (!asset_id) {
-    return <h3>404 not found!</h3>;
+  const route = searchParams.get("route");
+  const id = searchParams.get("id");
+
+  if (!route || !id) {
+    return <Navigate to={`/dashboard`} />;
   }
 
   return (
@@ -42,7 +45,8 @@ export const ExplorerLayout = () => {
       }}
     >
       <ExplorerProvider
-        asset_id={parseInt(asset_id)}
+        id={parseInt(id)}
+        route={route as Route}
         dataSource={mockDataSource(mockERC245, mockERC423)}
       >
         <Outlet />

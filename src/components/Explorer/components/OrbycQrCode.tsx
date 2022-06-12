@@ -6,7 +6,7 @@ import logo from "assets/identity/qr-logo.png";
 
 export function OrbycQrCode() {
   const { state } = useContext(ExplorerContext);
-  const { asset_id } = state.routes.current;
+  const { id: asset_id } = state.routes.current;
 
   const theme = useTheme();
   return (

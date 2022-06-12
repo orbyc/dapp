@@ -7,7 +7,7 @@ import { useContext } from "react";
 import { ExplorerContext } from "../context/explorerContext";
 import { AssetMetadata } from "orbyc-core/pb/metadata_pb";
 import { decodeHex } from "orbyc-core/utils/encoding";
-import {useFetch} from "utils/hooks";
+import { useFetch } from "utils/hooks";
 
 export function AssetOffer() {
   const {
@@ -17,7 +17,7 @@ export function AssetOffer() {
     },
   } = useContext(ExplorerContext);
 
-  const { data: asset, loading, error } = useFetch(dataSource.erc245.getAsset(current.asset_id));
+  const { data: asset, loading, error } = useFetch(dataSource.erc245.getAsset(current.id));
 
   if (loading || asset == null) {
     return <>loading...</>;

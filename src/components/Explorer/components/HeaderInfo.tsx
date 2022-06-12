@@ -44,7 +44,7 @@ export const ExplorerHeader: React.FC = () => {
     state: {
       dataSource: { erc245 },
       routes: {
-        current: { asset_id },
+        current: { id: asset_id },
       },
     },
   } = useContext(ExplorerContext);

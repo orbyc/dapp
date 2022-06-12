@@ -18,8 +18,7 @@ export const AppRoutes = () => {
             <Route path="movements" element={<Movements />} />
           </Route>
           <Route element={<ExplorerLayout />}>
-            <Route path="asset/:asset_id" element={<Explorer />} />
-            <Route path="cert/:cert_id" element={<></>} />
+            <Route index element={<Explorer />} />
           </Route>
         </Route>
         <Route index element={<NoMatch />} />
