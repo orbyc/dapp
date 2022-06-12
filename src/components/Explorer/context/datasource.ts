@@ -9,6 +9,17 @@ export interface DataSource {
         getAssetTraceability: (id: number) => Promise<number[]>;
         getCertificate: (id: number) => Promise<Certificate>;
         getMovement: (id: number) => Promise<Movement>;
+
+        getAssets: () => Promise<Asset[]>
+        getCertificates: () => Promise<Certificate[]>
+        getMovements: () => Promise<Movement[]>
+
+        issueAsset: (asset: Asset) => Promise<boolean>
+        issueCertificate: (certificate: Certificate) => Promise<boolean>
+        issueMovement: (movement: Movement) => Promise<boolean>
+        addCompositionToAsset: (assetId: number, parentId: number, percent: number) => Promise<boolean>
+        addCertificateToAsset: (assetId: number, certId: number) => Promise<boolean>
+        addMovementToAsset: (assetId: number, moveId: number) => Promise<boolean>
     },
     erc423: {
         getAccount: (address: string) => Promise<AccountMetadata>
@@ -27,5 +38,4 @@ export interface ERC245Collection {
 }
 export interface ERC423Collection {
     accounts: { [address: string]: AccountMetadata }
-
 }

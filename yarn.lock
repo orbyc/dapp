@@ -2411,6 +2411,11 @@
   resolved "https://registry.yarnpkg.com/@types/json5/-/json5-0.0.29.tgz#ee28707ae94e11d2b827bcbe5270bcea7f3e71ee"
   integrity sha1-7ihweulOEdK4J7y+UnC86n8+ce4=
 
+"@types/lodash@^4.14.182":
+  version "4.14.182"
+  resolved "https://registry.yarnpkg.com/@types/lodash/-/lodash-4.14.182.tgz#05301a4d5e62963227eaafe0ce04dd77c54ea5c2"
+  integrity sha512-/THyiqyQAP9AfARo4pF+aCGcyiQ94tX/Is2I7HofNRqoYLgN1PBoOWu2/zTA5zMxzP5EFutMtWtGAFRKUe961Q==
+
 "@types/mime@^1":
   version "1.3.2"
   resolved "https://registry.yarnpkg.com/@types/mime/-/mime-1.3.2.tgz#93e25bf9ee75fe0fd80b594bc4feb0e862111b5a"
@@ -7016,10 +7021,10 @@ orbyc-contracts@^1.0.4:
   resolved "https://registry.yarnpkg.com/orbyc-contracts/-/orbyc-contracts-1.0.4.tgz#fb589c0ddc836be50dfb15025fb0ddd2150f3433"
   integrity sha512-6NpA2d9u4VKFHArG46JBif2rcxi1BYMszAY7G3NsgIyUd/8NmY6asaHBoXPCOAvFgWGXf5ShTp84AL9OHlt1wQ==
 
-orbyc-core@^1.3.1:
-  version "1.3.1"
-  resolved "https://registry.yarnpkg.com/orbyc-core/-/orbyc-core-1.3.1.tgz#cd0988794f4d1fcd3b95884a4c92355375d172c0"
-  integrity sha512-nin8le3SJNcrqwOeMd/PKZAWu7RlmQlH34jxo8eSi5G4wMpPEaqruDxu/T8QjS8ujclIfllwH8AFQi6ld9JR4w==
+orbyc-core@^2.4.0:
+  version "2.4.0"
+  resolved "https://registry.yarnpkg.com/orbyc-core/-/orbyc-core-2.4.0.tgz#4b9aa0526de8c967aed2d8f1fc2c5a1b2be68176"
+  integrity sha512-ZrD8Ckl2qtqt5jhYkRZyrHEEo4smlK/x21VWcOmwFGOsVWuiy55rWCixz87jOYTcamBNRQQtME9mLAm2iBFPmQ==
   dependencies:
     buffer "^6.0.3"
     ts-protoc-gen "^0.15.0"
