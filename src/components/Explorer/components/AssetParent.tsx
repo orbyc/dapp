@@ -3,7 +3,7 @@ import { Grid, Typography } from "@mui/material";
 import { useContext } from "react";
 import { ExplorerContext, navigate } from "../context/explorerContext";
 import { ExplorerCard } from "./ExplorerCard";
-import {useFetch} from "utils/hooks";
+import { useFetch } from "utils/hooks";
 import { AssetMetadata } from "orbyc-core/pb/metadata_pb";
 import { decodeHex } from "orbyc-core/utils/encoding";
 import { Asset } from "orbyc-core/pb/domain_pb";
@@ -88,11 +88,9 @@ const AssetIssuerName = (props: AssetIssuerNameProps) => {
     },
   } = useContext(ExplorerContext);
 
-  const { data, loading } = useFetch(erc423.getAccount(props.asset.getIssuer()));
+  const { data, loading } = useFetch(erc423.accountInfo(props.asset.getIssuer()));
 
-  if (!data || loading) {
-    return <Loading />;
-  }
+  if (!data || loading) return <Loading />;
 
   return (
     <Typography variant="h5" lineHeight={1}>

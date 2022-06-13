@@ -9,33 +9,15 @@ export interface DataSource {
         getAssetTraceability: (id: number) => Promise<number[]>;
         getCertificate: (id: number) => Promise<Certificate>;
         getMovement: (id: number) => Promise<Movement>;
+        getMovementCertificates: (id: number) => Promise<number[]>;
 
         getAssets: () => Promise<Asset[]>
         getCertificates: () => Promise<Certificate[]>
         getMovements: () => Promise<Movement[]>
-
-        issueAsset: (asset: Asset) => Promise<boolean>
-        issueCertificate: (certificate: Certificate) => Promise<boolean>
-        issueMovement: (movement: Movement) => Promise<boolean>
-        addCompositionToAsset: (assetId: number, parentId: number, percent: number) => Promise<boolean>
-        addCertificateToAsset: (assetId: number, certId: number) => Promise<boolean>
-        addMovementToAsset: (assetId: number, moveId: number) => Promise<boolean>
     },
     erc423: {
-        getAccount: (address: string) => Promise<AccountMetadata>
+        accountOf: (address: string) => Promise<string>,
+        accountInfo: (address: string) => Promise<AccountMetadata>
+        hasRole: (address: string, role: number) => Promise<boolean>
     }
-}
-
-export interface ERC245Collection {
-    assets: { [id: number]: Asset }
-    assetCertificates: { [id: number]: number[] }
-    certificates: { [id: number]: Certificate }
-    movements: { [id: number]: Movement }
-    parents: { [id: number]: number[] }
-    compositions: { [id: number]: number[] }
-    traceabilities: { [id: number]: number[] }
-
-}
-export interface ERC423Collection {
-    accounts: { [address: string]: AccountMetadata }
 }

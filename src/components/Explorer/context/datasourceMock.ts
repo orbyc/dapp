@@ -1,13 +1,32 @@
 import { Timestamp } from "google-protobuf/google/protobuf/timestamp_pb";
 import { Asset, Certificate, Movement } from "orbyc-core/pb/domain_pb";
-import { AssetMetadata, Image, Link, Location, MovementMetadata } from "orbyc-core/pb/metadata_pb";
+import { AccountMetadata, AssetMetadata, Image, Link, Location, MovementMetadata } from "orbyc-core/pb/metadata_pb";
 import { encodeHex } from "orbyc-core/utils/encoding";
-import { DataSource, ERC245Collection, ERC423Collection } from "./datasource";
+import { DataSource } from "./datasource";
 import _ from "lodash"
 
 /*
     MOCK DATA SOURCE
 */
+
+export interface ERC245Collection {
+    assets: { [id: number]: Asset }
+    assetCertificates: { [id: number]: number[] }
+    certificates: { [id: number]: Certificate }
+    movements: { [id: number]: Movement }
+    movementCertificates: { [id: number]: number[] }
+    parents: { [id: number]: number[] }
+    compositions: { [id: number]: number[] }
+    traceabilities: { [id: number]: number[] }
+
+}
+export interface ERC423Collection {
+    accounts: { [address: string]: AccountMetadata }
+    agents: { [address: string]: string }
+    roles: { [role: number]: string[] }
+}
+
+
 export function mockDataSource(erc245: ERC245Collection, erc423: ERC423Collection, timeout: number = 1000): DataSource {
     return {
         erc245: {
@@ -30,6 +49,9 @@ export function mockDataSource(erc245: ERC245Collection, erc423: ERC423Collectio
             getMovement: (id) => {
                 return new Promise(resolve => setTimeout(() => resolve(erc245.movements[id]), timeout))
             },
+            getMovementCertificates: (id) => {
+                return new Promise(resolve => setTimeout(() => resolve(erc245.movementCertificates[id]), timeout))
+            },
 
             /* lists */
             getAssets: () => {
@@ -44,36 +66,11 @@ export function mockDataSource(erc245: ERC245Collection, erc423: ERC423Collectio
                 var result = _.values(erc245.movements)
                 return new Promise(resolve => setTimeout(() => resolve(result), timeout))
             },
-
-            /* setters */
-            issueAsset: (asset: Asset) => {
-                erc245.assets[asset.getId()] = asset
-                return new Promise(resolve => setTimeout(() => resolve(true), timeout))
-            },
-            issueCertificate: (certificate: Certificate) => {
-                erc245.certificates[certificate.getId()] = certificate
-                return new Promise(resolve => setTimeout(() => resolve(true), timeout))
-            },
-            issueMovement: (movement: Movement) => {
-                erc245.movements[movement.getId()] = movement
-                return new Promise(resolve => setTimeout(() => resolve(true), timeout))
-            },
-            addCompositionToAsset: (assetId: number, parentId: number, percent: number) => {
-                erc245.compositions[assetId].push(percent)
-                erc245.parents[assetId].push(parentId)
-                return new Promise(resolve => setTimeout(() => resolve(true), timeout))
-            },
-            addCertificateToAsset: (assetId: number, certId: number) => {
-                erc245.assetCertificates[assetId].push(certId)
-                return new Promise(resolve => setTimeout(() => resolve(true), timeout))
-            },
-            addMovementToAsset: (assetId: number, moveId: number) => {
-                erc245.traceabilities[assetId].push(moveId)
-                return new Promise(resolve => setTimeout(() => resolve(true), timeout))
-            },
         },
         erc423: {
-            getAccount: (address) => Promise.resolve(erc423.accounts[address])
+            accountInfo: (address) => Promise.resolve(erc423.accounts[address]),
+            accountOf: (address) => Promise.resolve(erc423.agents[address]),
+            hasRole: (address, role) => Promise.resolve(erc423.roles[role].includes(address))
         }
     }
 }
@@ -115,16 +112,15 @@ export function getMockAsset() {
     return asset
 }
 
-export function getMockMovement(id: number, city: string, country: string, distance: number, start: string, duration: number, co2e: number, lat: string, lng: string) {
+export function getMockMovement(id: number) {
     var movementMetadata = new MovementMetadata()
-    movementMetadata.setDistance(distance)
     movementMetadata.setType(0)
-    movementMetadata.setDuration(getMockDuration(duration))
-    movementMetadata.setLocation(getMockLocation(city, country, start, lat, lng))
+    movementMetadata.setFrom(getMockLocation("HAV", "CU", "Jan 21 2018", "", ""))
+    movementMetadata.setTo(getMockLocation("HAV", "CU", "Jan 22 2018", "", ""))
 
     var movement = new Movement()
     movement.setCertid(1)
-    movement.setCo2e(co2e)
+    movement.setCo2e(200)
     movement.setId(id)
     movement.setIssuer("0x024269E2057b904d1Fa6a7B52056A8580a85180F")
     movement.setMetadata(encodeHex(movementMetadata.serializeBinary()))
@@ -132,14 +128,14 @@ export function getMockMovement(id: number, city: string, country: string, dista
     return movement
 }
 
-function getMockImage(name: string, url: string): Image {
+export function getMockImage(name: string, url: string): Image {
     var image = new Image()
     image.setAttachment(url)
     image.setName(name)
     return image
 }
 
-function getMockLink(icon: string, name: string, url: string): Link {
+export function getMockLink(icon: string, name: string, url: string): Link {
     var link = new Link()
     link.setIcon(icon)
     link.setName(name)
@@ -147,22 +143,26 @@ function getMockLink(icon: string, name: string, url: string): Link {
     return link
 }
 
-function getMockDuration(duration: number): Timestamp {
-    return new Timestamp()
-        .setSeconds(duration)
-}
-
-function getMockTimestamp(date: string): Timestamp {
+export function getMockTimestamp(date: string): Timestamp {
     return new Timestamp()
         .setSeconds(Date.parse(date))
 }
 
-function getMockLocation(city: string, country: string, start: string, lat: string, lng: string): Location {
+export function getMockLocation(city: string, country: string, start: string, lat: string, lng: string): Location {
     var location = new Location()
-    location.setCountryIso2(country)
+    location.setCountry(country)
     location.setDate(getMockTimestamp(start))
     location.setLat(lat)
     location.setLng(lng)
     location.setLocation(city)
     return location
+}
+
+export function getMockAccount(): AccountMetadata {
+    var account = new AccountMetadata()
+    account.setDescription("Trans Circular account metadata")
+    account.setLinksList([])
+    account.setLogo(getMockImage("", ""))
+    account.setName("Orbyc CO.")
+    return account
 }
