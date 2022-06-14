@@ -7182,10 +7182,10 @@ optionator@^0.9.1:
     type-check "^0.4.0"
     word-wrap "^1.2.3"
 
-orbyc-contracts@^1.0.4:
-  version "1.0.4"
-  resolved "https://registry.yarnpkg.com/orbyc-contracts/-/orbyc-contracts-1.0.4.tgz#fb589c0ddc836be50dfb15025fb0ddd2150f3433"
-  integrity sha512-6NpA2d9u4VKFHArG46JBif2rcxi1BYMszAY7G3NsgIyUd/8NmY6asaHBoXPCOAvFgWGXf5ShTp84AL9OHlt1wQ==
+orbyc-contracts@^1.1.0:
+  version "1.1.0"
+  resolved "https://registry.yarnpkg.com/orbyc-contracts/-/orbyc-contracts-1.1.0.tgz#ff99865404143199e2ef471a8fb0365a68ddf941"
+  integrity sha512-1cleSjS8CZHL835VV9rQeGwKx36sxoIdVfSU+aN9Met19h58cN6S9qQxRsdrZEARb0S8m1kgDzRc1ZAL0JEx+Q==
 
 orbyc-core@^2.5.0:
   version "2.5.0"

@@ -1,14 +1,21 @@
 import { Certificate } from "orbyc-core/pb/domain_pb";
 import { CertificateMetadata } from "orbyc-core/pb/metadata_pb";
-import { decodeHex } from "orbyc-core/utils/encoding";
+import { decodeHex, encodeHex } from "orbyc-core/utils/encoding";
 
 import { Form, Formik, Field, ErrorMessage } from "formik";
 import * as yup from "yup";
 import StepForm from "./StepForm";
+import { Timestamp } from "google-protobuf/google/protobuf/timestamp_pb";
+import { useMetaMask } from "metamask-react";
+import { ethers } from "ethers";
+import { SupplyChainAddress } from "components/constants";
+import artifacts from "orbyc-contracts/artifacts/contracts/tokens/ERC245/ERC245.sol/ERC245.json";
 
 const validationSchema = yup.object({});
 
 export function CertificateForm() {
+  const { ethereum } = useMetaMask();
+
   const certificate = new Certificate();
   const metadata = CertificateMetadata.deserializeBinary(decodeHex(certificate.getMetadata()));
 
@@ -56,14 +63,32 @@ export function CertificateForm() {
         ...certificate.toObject(),
         ...metadata.toObject(),
 
-        issuedat: issuanceDate,
+        issuedat: issuanceDate.toString(),
       }}
       validationSchema={validationSchema}
-      onSubmit={async (e) => {
-        console.log({ e });
+      onSubmit={async (data) => {
+        try {
+          const metadata = new CertificateMetadata();
+          metadata.setAttachment(data.attachment);
+          metadata.setDate(new Timestamp().setSeconds(Date.parse(data.issuedat)));
+          metadata.setUrl(data.url);
+
+          const cert = new Certificate();
+          cert.setId(data.id);
+          cert.setMetadata(encodeHex(metadata.serializeBinary()));
+
+          const provider = new ethers.providers.Web3Provider(ethereum);
+          const signer = provider.getSigner();
+          const contract = new ethers.Contract(SupplyChainAddress, artifacts.abi, signer);
+
+          const result = await contract.issueCertificate(cert.getId(), cert.getMetadata());
+          console.log({ result });
+        } catch (error) {
+          console.log({ e: error });
+        }
       }}
     >
-      {({ values }) => (
+      {() => (
         <StepForm
           steps={[
             { label: "General", element: <GeneralForm /> },
