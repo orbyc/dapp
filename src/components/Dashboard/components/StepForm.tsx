@@ -1,4 +1,4 @@
-import { Divider, Grid, Step, StepLabel, Stepper } from "@mui/material";
+import { Box, Divider, Grid, Step, StepLabel, Stepper } from "@mui/material";
 import React, { useState } from "react";
 import { Button } from "./Button";
 
@@ -15,7 +15,7 @@ export default function StepForm({ steps, children }: StepFormProps) {
   const handlePrevious = () => setStep((active) => active - 1);
 
   return (
-    <>
+    <Box display={`flex`} flexDirection={`column`} height={`100%`} p={3}>
       <Stepper activeStep={step} alternativeLabel>
         {steps.map(({ label }) => (
           <Step key={label}>
@@ -23,9 +23,9 @@ export default function StepForm({ steps, children }: StepFormProps) {
           </Step>
         ))}
       </Stepper>
-
-      {children(steps[step].element)}
-
+      <Box flexGrow={1} p={3}>
+        {children(steps[step].element)}
+      </Box>
       <Divider />
       <Grid container justifyContent={`space-between`} mt={3}>
         <Grid item>
@@ -39,6 +39,6 @@ export default function StepForm({ steps, children }: StepFormProps) {
           </Button>
         </Grid>
       </Grid>
-    </>
+    </Box>
   );
 }

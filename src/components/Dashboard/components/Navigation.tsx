@@ -1,7 +1,7 @@
 import { Link } from "react-router-dom";
 import { useMetaMask } from "metamask-react";
 import { useContext, useState } from "react";
-import { AppBar, Dialog, IconButton, Toolbar } from "@mui/material";
+import { AppBar, Box, Dialog, Grid, IconButton, Toolbar } from "@mui/material";
 import Tab from "@mui/material/Tab";
 import { TabContext, TabList, TabPanel } from "@mui/lab";
 
@@ -15,13 +15,15 @@ import VerifiedUserRoundedIcon from "@mui/icons-material/VerifiedUserRounded";
 import TimelineRoundedIcon from "@mui/icons-material/TimelineRounded";
 import CloseIcon from "@mui/icons-material/Close";
 
+type ModalForm = "ASSET" | "CERTIFICATE" | "MOVEMENT";
+
 export function Navigation() {
   const { chainId } = useMetaMask();
   const account = useContext(AccountContext);
 
-  const [open, setOpen] = useState<boolean>(false);
-  const handleClose = () => setOpen(false);
-  const handleOpen = () => setOpen(true);
+  const [open, setOpen] = useState<ModalForm>();
+  const handleOpen = (form: ModalForm) => () => setOpen(form);
+  const handleClose = () => setOpen(undefined);
 
   return (
     <>
@@ -37,7 +39,13 @@ export function Navigation() {
           <Link to={`/dashboard/movements`}>Movements</Link>
         </li>
         <li>
-          <button onClick={handleOpen}>Issue</button>
+          <button onClick={handleOpen("ASSET")}>Issue Asset</button>
+        </li>
+        <li>
+          <button onClick={handleOpen("CERTIFICATE")}>Issue Certificate</button>
+        </li>
+        <li>
+          <button onClick={handleOpen("MOVEMENT")}>Issue Movement</button>
         </li>
         <li>
           Connected account {account} on chain ID {chainId}
@@ -48,7 +56,7 @@ export function Navigation() {
 }
 
 interface FormModalProps {
-  open: boolean;
+  open?: ModalForm;
   handleClose: () => void;
 }
 
@@ -60,30 +68,18 @@ function FormModal({ open, handleClose }: FormModalProps) {
   };
 
   return (
-    <TabContext value={value}>
-      <Dialog open={open} onClose={handleClose} maxWidth="lg" fullWidth>
-        <AppBar sx={{ position: "relative" }} color="transparent" elevation={0}>
-          <Toolbar>
-            <TabList onChange={handleChange} aria-label="select-item-tabs" sx={{ flex: 1 }}>
-              <Tab icon={<FeedRoundedIcon />} value="1" />
-              <Tab icon={<TimelineRoundedIcon />} value="2" />
-              <Tab icon={<VerifiedUserRoundedIcon />} value="3" />
-            </TabList>
-            <IconButton edge="start" color="inherit" onClick={handleClose} aria-label="close">
-              <CloseIcon />
-            </IconButton>
-          </Toolbar>
-        </AppBar>
-        <TabPanel value="1">
-          <AssetForm />
-        </TabPanel>
-        <TabPanel value="2">
-          <MovementForm />
-        </TabPanel>
-        <TabPanel value="3">
-          <CertificateForm />
-        </TabPanel>
-      </Dialog>
-    </TabContext>
+    <Dialog open={open !== undefined} onClose={handleClose} maxWidth="xl" fullScreen>
+      <AppBar position="relative" color="transparent" elevation={0}>
+        <Toolbar>
+          <Box flex={1} />
+          <IconButton edge="start" color="inherit" onClick={handleClose} aria-label="close">
+            <CloseIcon />
+          </IconButton>
+        </Toolbar>
+      </AppBar>
+      {open === "ASSET" && <AssetForm />}
+      {open === "MOVEMENT" && <MovementForm />}
+      {open === "CERTIFICATE" && <CertificateForm />}
+    </Dialog>
   );
 }

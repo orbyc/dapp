@@ -5,6 +5,7 @@ import {
   ERC423Collection,
   getMockAccount,
   getMockAsset,
+  getMockCertificate,
   getMockMovement,
   mockDataSource,
 } from "./context/datasourceMock";
@@ -17,8 +18,8 @@ export const mockERC245: ERC245Collection = {
   parents: { 1: [] },
   traceabilities: { 1: [1, 2] },
 
-  certificates: {},
-  
+  certificates: { 1: getMockCertificate(1), 2: getMockCertificate(2), 3: getMockCertificate(3) },
+
   movements: {
     1: getMockMovement(1),
     2: getMockMovement(2),

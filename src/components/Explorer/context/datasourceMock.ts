@@ -1,6 +1,6 @@
 import { Timestamp } from "google-protobuf/google/protobuf/timestamp_pb";
 import { Asset, Certificate, Movement } from "orbyc-core/pb/domain_pb";
-import { AccountMetadata, AssetMetadata, Image, Link, Location, MovementMetadata } from "orbyc-core/pb/metadata_pb";
+import { AccountMetadata, AssetMetadata, CertificateMetadata, Image, Link, Location, MovementMetadata } from "orbyc-core/pb/metadata_pb";
 import { encodeHex } from "orbyc-core/utils/encoding";
 import { DataSource } from "./datasource";
 import _ from "lodash"
@@ -51,20 +51,6 @@ export function mockDataSource(erc245: ERC245Collection, erc423: ERC423Collectio
             },
             getMovementCertificates: (id) => {
                 return new Promise(resolve => setTimeout(() => resolve(erc245.movementCertificates[id]), timeout))
-            },
-
-            /* lists */
-            getAssets: () => {
-                var result = _.values(erc245.assets)
-                return new Promise(resolve => setTimeout(() => resolve(result), timeout))
-            },
-            getCertificates: () => {
-                var result = _.values(erc245.certificates)
-                return new Promise(resolve => setTimeout(() => resolve(result), timeout))
-            },
-            getMovements: () => {
-                var result = _.values(erc245.movements)
-                return new Promise(resolve => setTimeout(() => resolve(result), timeout))
             },
         },
         erc423: {
@@ -126,6 +112,20 @@ export function getMockMovement(id: number) {
     movement.setMetadata(encodeHex(movementMetadata.serializeBinary()))
 
     return movement
+}
+
+export function getMockCertificate(id: number): Certificate {
+    const metadata = new CertificateMetadata()
+    metadata.setAttachment("attachment")
+    metadata.setDate(new Timestamp().setSeconds(new Date().getUTCSeconds()))
+    metadata.setUrl("url")
+
+    const certificate = new Certificate()
+    certificate.setId(id)
+    certificate.setIssuer("0x024269E2057b904d1Fa6a7B52056A8580a85180F")
+    certificate.setMetadata(encodeHex(metadata.serializeBinary()))
+
+    return certificate
 }
 
 export function getMockImage(name: string, url: string): Image {

@@ -10,10 +10,6 @@ export interface DataSource {
         getCertificate: (id: number) => Promise<Certificate>;
         getMovement: (id: number) => Promise<Movement>;
         getMovementCertificates: (id: number) => Promise<number[]>;
-
-        getAssets: () => Promise<Asset[]>
-        getCertificates: () => Promise<Certificate[]>
-        getMovements: () => Promise<Movement[]>
     },
     erc423: {
         accountOf: (address: string) => Promise<string>,
