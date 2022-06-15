@@ -28,9 +28,12 @@ export const mockERC245: ERC245Collection = {
 };
 
 export const mockERC423: ERC423Collection = {
-  accounts: { "0xe375639d0Fa6feC13e6F00A09A3D3BAcf18A354F": getMockAccount() },
+  accounts: {
+    "0xe375639d0Fa6feC13e6F00A09A3D3BAcf18A354F": getMockAccount(),
+  },
   agents: {
     "0x024269e2057b904d1fa6a7b52056a8580a85180f": "0xe375639d0Fa6feC13e6F00A09A3D3BAcf18A354F",
+    "0x7B997BD00599a87334a4187e51A2320D740d14bb": "0xe375639d0Fa6feC13e6F00A09A3D3BAcf18A354F",
   },
   roles: {
     0: ["0xe375639d0Fa6feC13e6F00A09A3D3BAcf18A354F"],

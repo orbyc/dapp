@@ -284,9 +284,19 @@ export function MovementCertificatesForm(props: MovementFormProps) {
       validationSchema={validationSchema}
       onSubmit={async (data, { setSubmitting }) => {
         try {
-          console.log({ data });
+          const provider = new ethers.providers.Web3Provider(ethereum);
+          const signer = provider.getSigner();
+          const contract = new ethers.Contract(SupplyChainAddress, artifacts.abi, signer);
+
+          const transaction = await contract.addMovementCertificates(
+            props.moveid,
+            data.certificatesList
+          );
+          console.log({ tx: transaction });
+          setSubmitting(false);
         } catch (error) {
           console.log({ error });
+          setSubmitting(false);
         }
       }}
     >

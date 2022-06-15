@@ -1,12 +1,16 @@
 import { Asset } from "orbyc-core/pb/domain_pb";
-import { AssetMetadata, Image, Link } from "orbyc-core/pb/metadata_pb";
-import { decodeHex } from "orbyc-core/utils/encoding";
+import { AssetMetadata, Image, Link, Location } from "orbyc-core/pb/metadata_pb";
+import { decodeHex, encodeHex } from "orbyc-core/utils/encoding";
 
 import { Form, Formik, FieldArray, Field, ErrorMessage } from "formik";
 import * as yup from "yup";
 
 import StepForm from "./StepForm";
 import artifacts from "orbyc-contracts/artifacts/contracts/tokens/ERC245/ERC245.sol/ERC245.json";
+import { Timestamp } from "google-protobuf/google/protobuf/timestamp_pb";
+import { ethers } from "ethers";
+import { useMetaMask } from "metamask-react";
+import { SupplyChainAddress } from "components/constants";
 
 interface FormProps {
   values: AssetMetadata.AsObject & Asset.AsObject;
@@ -46,6 +50,8 @@ const PublishForm = ({ isSubmitting }: SubmitFormProps) => (
 const validationSchema = yup.object({});
 
 export function AssetForm() {
+  const { ethereum } = useMetaMask();
+
   /* load asset data TODO: get as dependencies */
   const asset = new Asset();
   const metadata = AssetMetadata.deserializeBinary(decodeHex(asset.getMetadata()));
@@ -64,6 +70,11 @@ export function AssetForm() {
         <label htmlFor="id">Serial number</label>
         <Field type="number" name="id" />
         <ErrorMessage name="id" component="div" />
+      </div>
+      <div>
+        <label htmlFor="owner">Owner</label>
+        <Field type="text" name="owner" />
+        <ErrorMessage name="owner" component="div" />
       </div>
       <div>
         <label htmlFor="name">Asset name</label>
@@ -295,11 +306,86 @@ export function AssetForm() {
       initialValues={{
         ...asset.toObject(),
         ...metadata.toObject(),
-        createdAt: creationDate,
+        createdAt: creationDate.toString(),
       }}
       validationSchema={validationSchema}
-      onSubmit={async (e) => {
-        console.log({ e });
+      onSubmit={async (data, { setSubmitting }) => {
+        try {
+          const background = new Image();
+          if (data.background) {
+            background.setAttachment(data.background.attachment);
+            background.setName(data.background.name);
+          }
+
+          const creation = new Location();
+          if (data.creation) {
+            creation.setCountry(data.creation.country);
+            creation.setDate(new Timestamp().setSeconds(Date.parse(data.createdAt)));
+            creation.setLat(data.creation.lat);
+            creation.setLng(data.creation.lng);
+            creation.setLocation(data.creation.location);
+          }
+
+          const images = data.imagesList.map(({ attachment, name }) => {
+            const image = new Image();
+            image.setAttachment(attachment);
+            image.setName(name);
+            return image;
+          });
+
+          const links = data.linksList.map(({ icon, name, url }) => {
+            const link = new Link();
+            link.setIcon(icon);
+            link.setName(name);
+            link.setUrl(url);
+            return link;
+          });
+
+          const properties = data.propertiesList.map(({ icon, name, value }) => {
+            const property = new AssetMetadata.Property();
+            property.setIcon(icon);
+            property.setName(name);
+            property.setValue(value);
+            return property;
+          });
+
+          const metadata = new AssetMetadata();
+          metadata.setBackground(background);
+          metadata.setCreation(creation);
+          metadata.setDescription(data.description);
+          metadata.setHeader(data.header);
+          metadata.setName(data.name);
+          metadata.setImagesList(images);
+          metadata.setLinksList(links);
+          metadata.setPropertiesList(properties);
+
+          const asset = new Asset();
+          asset.setCertid(data.certid);
+          asset.setCo2e(data.co2e);
+          asset.setId(data.id);
+          asset.setOwner(data.owner);
+          asset.setMetadata(encodeHex(metadata.serializeBinary()));
+
+          const provider = new ethers.providers.Web3Provider(ethereum);
+          const signer = provider.getSigner();
+          const contract = new ethers.Contract(SupplyChainAddress, artifacts.abi, signer);
+          
+          console.log({asset:asset.toObject()});
+          const transaction = await contract.issueAsset(
+            asset.getId(),
+            asset.getOwner(),
+            asset.getCo2e(),
+            asset.getCertid(),
+            asset.getMetadata()
+          );
+          console.log("working");
+          console.log({ transaction });
+
+          setSubmitting(false);
+        } catch (error) {
+          console.log({ error });
+          setSubmitting(false);
+        }
       }}
     >
       {({ values, isSubmitting }) => (
@@ -325,6 +411,8 @@ export function AssetForm() {
 */
 
 export function AssetTraceabilityForm(props: AssetFormProps) {
+  const { ethereum } = useMetaMask();
+
   const relations: AssetRelations = {
     traceabilityList: [],
     compositionsList: [],
@@ -374,8 +462,19 @@ export function AssetTraceabilityForm(props: AssetFormProps) {
     <Formik
       initialValues={{ ...relations }}
       validationSchema={validationSchema}
-      onSubmit={async (e) => {
-        console.log({ e });
+      onSubmit={async (data, { setSubmitting }) => {
+        try {
+          const provider = new ethers.providers.Web3Provider(ethereum);
+          const signer = provider.getSigner();
+          const contract = new ethers.Contract(SupplyChainAddress, artifacts.abi, signer);
+
+          const transaction = await contract.addMovements(props.assetid, data.traceabilityList);
+          console.log({ transaction });
+          setSubmitting(false);
+        } catch (error) {
+          console.log({ error });
+          setSubmitting(false);
+        }
       }}
     >
       {({ values, isSubmitting }) => (
@@ -397,6 +496,8 @@ export function AssetTraceabilityForm(props: AssetFormProps) {
 */
 
 export function AssetCompositionForm(props: AssetFormProps) {
+  const { ethereum } = useMetaMask();
+
   const relations: AssetRelations = {
     traceabilityList: [],
     compositionsList: [],
@@ -460,8 +561,22 @@ export function AssetCompositionForm(props: AssetFormProps) {
     <Formik
       initialValues={{ ...relations }}
       validationSchema={validationSchema}
-      onSubmit={async (e) => {
-        console.log({ e });
+      onSubmit={async (data, { setSubmitting }) => {
+        try {
+          const percents = data.compositionsList.map((e) => e.percent);
+          const parents = data.compositionsList.map((e) => e.parentid);
+
+          const provider = new ethers.providers.Web3Provider(ethereum);
+          const signer = provider.getSigner();
+          const contract = new ethers.Contract(SupplyChainAddress, artifacts.abi, signer);
+
+          const transaction = await contract.addParents(props.assetid, parents, percents);
+          console.log({ transaction });
+          setSubmitting(false);
+        } catch (error) {
+          console.log({ error });
+          setSubmitting(false);
+        }
       }}
     >
       {({ values, isSubmitting }) => (
@@ -483,6 +598,8 @@ export function AssetCompositionForm(props: AssetFormProps) {
 */
 
 export function AssetCertificatesForm(props: AssetFormProps) {
+  const { ethereum } = useMetaMask();
+
   const relations: AssetRelations = {
     traceabilityList: [],
     compositionsList: [],
@@ -532,8 +649,22 @@ export function AssetCertificatesForm(props: AssetFormProps) {
     <Formik
       initialValues={{ ...relations }}
       validationSchema={validationSchema}
-      onSubmit={async (e) => {
-        console.log({ e });
+      onSubmit={async (data, { setSubmitting }) => {
+        try {
+          const provider = new ethers.providers.Web3Provider(ethereum);
+          const signer = provider.getSigner();
+          const contract = new ethers.Contract(SupplyChainAddress, artifacts.abi, signer);
+
+          const transaction = await contract.addAssetCertificates(
+            props.assetid,
+            data.certificatesList
+          );
+          console.log({ transaction });
+          setSubmitting(false);
+        } catch (error) {
+          console.log({ error });
+          setSubmitting(false);
+        }
       }}
     >
       {({ values, isSubmitting }) => (
