@@ -10,11 +10,15 @@ import { useMetaMask } from "metamask-react";
 import { ethers } from "ethers";
 import { SupplyChainAddress } from "components/constants";
 import artifacts from "orbyc-contracts/artifacts/contracts/tokens/ERC245/ERC245.sol/ERC245.json";
+import { SubmitFormProps } from "./AssetForm";
+import { useContext } from "react";
+import { NotificationContext, pushNotification } from "context/notification";
 
 const validationSchema = yup.object({});
 
 export function CertificateForm() {
   const { ethereum } = useMetaMask();
+  const { dispatch } = useContext(NotificationContext);
 
   const certificate = new Certificate();
   const metadata = CertificateMetadata.deserializeBinary(decodeHex(certificate.getMetadata()));
@@ -51,9 +55,12 @@ export function CertificateForm() {
       </div>
     </div>
   );
-  const PublishForm = () => (
+
+  const PublishForm = ({ isSubmitting }: SubmitFormProps) => (
     <>
-      <button type="submit">Publish to Blockchain</button>
+      <button type="submit" disabled={isSubmitting}>
+        Publish to Blockchain
+      </button>
     </>
   );
 
@@ -66,7 +73,7 @@ export function CertificateForm() {
         issuedat: issuanceDate.toString(),
       }}
       validationSchema={validationSchema}
-      onSubmit={async (data) => {
+      onSubmit={async (data, { setSubmitting }) => {
         try {
           const metadata = new CertificateMetadata();
           metadata.setAttachment(data.attachment);
@@ -81,19 +88,22 @@ export function CertificateForm() {
           const signer = provider.getSigner();
           const contract = new ethers.Contract(SupplyChainAddress, artifacts.abi, signer);
 
-          const result = await contract.issueCertificate(cert.getId(), cert.getMetadata());
-          console.log({ result });
-        } catch (error) {
-          console.log({ e: error });
+          const { wait } = await contract.issueCertificate(cert.getId(), cert.getMetadata());
+          await wait(2);
+          dispatch(
+            pushNotification({ message: `Certificate ${cert.getId()} published`, type: "SUCCESS" })
+          );
+        } catch ({ message }) {
+          dispatch(pushNotification({ message: message as string, type: "ERROR" }));
         }
+        setSubmitting(false);
       }}
     >
-      {() => (
+      {({ isSubmitting }) => (
         <StepForm
           steps={[
             { label: "General", element: <GeneralForm /> },
-
-            { label: "Publish", element: <PublishForm /> },
+            { label: "Publish", element: <PublishForm isSubmitting={isSubmitting} /> },
           ]}
         >
           {(body) => <Form>{body}</Form>}

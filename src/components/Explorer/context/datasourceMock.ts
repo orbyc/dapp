@@ -3,7 +3,6 @@ import { Asset, Certificate, Movement } from "orbyc-core/pb/domain_pb";
 import { AccountMetadata, AssetMetadata, CertificateMetadata, Image, Link, Location, MovementMetadata } from "orbyc-core/pb/metadata_pb";
 import { encodeHex } from "orbyc-core/utils/encoding";
 import { DataSource } from "./datasource";
-import _ from "lodash"
 
 /*
     MOCK DATA SOURCE

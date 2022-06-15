@@ -1,25 +1,48 @@
 import { Movement } from "orbyc-core/pb/domain_pb";
-import { MovementMetadata } from "orbyc-core/pb/metadata_pb";
-import { decodeHex } from "orbyc-core/utils/encoding";
+import { Location, MovementMetadata } from "orbyc-core/pb/metadata_pb";
+import { decodeHex, encodeHex } from "orbyc-core/utils/encoding";
 
-import { Form, Formik, FieldArray, Field, ErrorMessage } from "formik";
+import { Form, Formik, Field, ErrorMessage, FieldArray } from "formik";
 import * as yup from "yup";
 import StepForm from "./StepForm";
+import { SubmitFormProps } from "./AssetForm";
+import { Timestamp } from "google-protobuf/google/protobuf/timestamp_pb";
+import { ethers } from "ethers";
+import { useMetaMask } from "metamask-react";
+import { SupplyChainAddress } from "components/constants";
+import artifacts from "orbyc-contracts/artifacts/contracts/tokens/ERC245/ERC245.sol/ERC245.json";
+
+// interface FormProps {
+//   values: MovementMetadata.AsObject & Movement.AsObject;
+// }
 
 interface MovementRelations {
   certificatesList: number[];
 }
 
-interface FormProps {
-  values: MovementMetadata.AsObject & Movement.AsObject & MovementRelations;
+interface MovementRelationsFormProps {
+  values: MovementRelations;
+}
+
+interface MovementFormProps {
+  moveid: number;
 }
 
 const validationSchema = yup.object({});
 
+const PublishForm = ({ isSubmitting }: SubmitFormProps) => (
+  <>
+    <button type="submit" disabled={isSubmitting}>
+      Publish to Blockchain
+    </button>
+  </>
+);
+
 export function MovementForm() {
+  const { ethereum } = useMetaMask();
+
   const movement = new Movement();
   const metadata = MovementMetadata.deserializeBinary(decodeHex(movement.getMetadata()));
-  const relations: MovementRelations = { certificatesList: [] };
 
   /* parse departure date */
   const departureTimestamp = metadata.getFrom()?.getDate();
@@ -46,17 +69,12 @@ export function MovementForm() {
       <div>
         <label htmlFor="type">Transportation type</label>
         <Field type="select" name="type" component="select">
-          <option value="CREATE">Create</option>
-          <option value="AIR">Air</option>
-          <option value="SEA">Sea</option>
-          <option value="LAND">Land</option>
+          <option value={0}>Create</option>
+          <option value={1}>Air</option>
+          <option value={2}>Sea</option>
+          <option value={3}>Land</option>
         </Field>
         <ErrorMessage name="type" component="div" />
-      </div>
-      <div>
-        <label htmlFor="certid">Emissions certificate</label>
-        <Field type="number" name="certid" />
-        <ErrorMessage name="certid" component="div" />
       </div>
       <div>
         <label htmlFor="distance">Distance</label>
@@ -93,7 +111,7 @@ export function MovementForm() {
         <Field type="text" name="from.country" />
         <ErrorMessage name="from.country" component="div" />
       </div>
-      {/* <div>
+      <div>
         <label htmlFor="from.lat">Latitude</label>
         <Field type="text" name="from.lat" />
         <ErrorMessage name="from.lat" component="div" />
@@ -102,7 +120,7 @@ export function MovementForm() {
         <label htmlFor="from.lng">Longitude</label>
         <Field type="text" name="from.lng" />
         <ErrorMessage name="from.lng" component="div" />
-      </div> */}
+      </div>
     </div>
   );
 
@@ -123,7 +141,7 @@ export function MovementForm() {
         <Field type="text" name="to.country" />
         <ErrorMessage name="to.country" component="div" />
       </div>
-      {/* <div>
+      <div>
         <label htmlFor="to.lat">Latitude</label>
         <Field type="text" name="to.lat" />
         <ErrorMessage name="to.lat" component="div" />
@@ -132,11 +150,96 @@ export function MovementForm() {
         <label htmlFor="to.lng">Longitude</label>
         <Field type="text" name="to.lng" />
         <ErrorMessage name="to.lng" component="div" />
-      </div> */}
+      </div>
     </div>
   );
 
-  const CertificatesForm = ({ values }: FormProps) => (
+  return (
+    <Formik
+      initialValues={{
+        ...movement.toObject(),
+        ...metadata.toObject(),
+        departureat: departureDate.toString(),
+        arrivalat: arrivalDate.toString(),
+      }}
+      validationSchema={validationSchema}
+      onSubmit={async (data, { setSubmitting }) => {
+        try {
+          const from = new Location();
+          if (data.from) {
+            from.setCountry(data.from.country);
+            from.setDate(new Timestamp().setSeconds(Date.parse(data.departureat)));
+            from.setLat(data.from.lat);
+            from.setLng(data.from.lng);
+            from.setLocation(data.from.location);
+          }
+
+          const to = new Location();
+          if (data.to) {
+            to.setCountry(data.to.country);
+            to.setDate(new Timestamp().setSeconds(Date.parse(data.arrivalat)));
+            to.setLat(data.to.lat);
+            to.setLng(data.to.lng);
+            to.setLocation(data.to.location);
+          }
+
+          const metadata = new MovementMetadata();
+          metadata.setDistance(data.distance);
+          metadata.setFrom(from);
+          metadata.setTo(to);
+          metadata.setType(data.type);
+
+          const move = new Movement();
+          move.setCertid(data.certid);
+          move.setCo2e(data.co2e);
+          move.setId(data.id);
+          move.setMetadata(encodeHex(metadata.serializeBinary()));
+
+          const provider = new ethers.providers.Web3Provider(ethereum);
+          const signer = provider.getSigner();
+          const contract = new ethers.Contract(SupplyChainAddress, artifacts.abi, signer);
+
+          const tx = await contract.issueMovement(
+            move.getId(),
+            move.getCo2e(),
+            move.getCertid(),
+            move.getMetadata()
+          );
+
+          await tx.wait(1);
+          console.log({ tx });
+        } catch (error) {
+          console.log({ error });
+        }
+      }}
+    >
+      {({ isSubmitting }) => (
+        <StepForm
+          steps={[
+            { label: "General", element: <GeneralForm /> },
+            { label: "Departure", element: <DepartureForm /> },
+            { label: "Arrival", element: <ArrivalForm /> },
+
+            { label: "Publish", element: <PublishForm isSubmitting={isSubmitting} /> },
+          ]}
+        >
+          {(body) => <Form>{body}</Form>}
+        </StepForm>
+      )}
+    </Formik>
+  );
+}
+
+/*
+  MOVEMENT CERTIFICATES
+*/
+
+export function MovementCertificatesForm(props: MovementFormProps) {
+  const { ethereum } = useMetaMask();
+
+  const relations: MovementRelations = { certificatesList: [] };
+
+  const CertificatesForm = ({ values }: MovementRelationsFormProps) => (
     <FieldArray name="certificatesList">
       {({ remove, push }) => (
         <>
@@ -175,35 +278,23 @@ export function MovementForm() {
     </FieldArray>
   );
 
-  const PublishForm = () => (
-    <>
-      <button type="submit">Publish to Blockchain</button>
-    </>
-  );
-
   return (
     <Formik
-      initialValues={{
-        ...movement.toObject(),
-        ...metadata.toObject(),
-        ...relations,
-
-        departureat: departureDate,
-        arrivalat: arrivalDate,
-      }}
+      initialValues={{ ...relations }}
       validationSchema={validationSchema}
-      onSubmit={async (e) => {
-        console.log({ e });
+      onSubmit={async (data, { setSubmitting }) => {
+        try {
+          console.log({ data });
+        } catch (error) {
+          console.log({ error });
+        }
       }}
     >
-      {({ values }) => (
+      {({ values, isSubmitting }) => (
         <StepForm
           steps={[
-            { label: "General", element: <GeneralForm /> },
-            { label: "Departure", element: <DepartureForm /> },
-            { label: "Arrival", element: <ArrivalForm /> },
             { label: "Certificates", element: <CertificatesForm values={values} /> },
-            { label: "Publish", element: <PublishForm /> },
+            { label: "Publish", element: <PublishForm isSubmitting={isSubmitting} /> },
           ]}
         >
           {(body) => <Form>{body}</Form>}

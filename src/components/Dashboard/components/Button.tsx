@@ -1,3 +1,5 @@
-import { Button as MUIButton, ButtonProps } from "@mui/material"
+import { Button as MUIButton, ButtonProps } from "@mui/material";
 
-export const Button = (props:ButtonProps) => <MUIButton {...props} variant="contained" disableElevation />
+export const Button = (props: ButtonProps) => (
+  <MUIButton {...props} variant="contained" disableElevation />
+);

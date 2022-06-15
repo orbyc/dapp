@@ -6,6 +6,11 @@ import { Form, Formik, FieldArray, Field, ErrorMessage } from "formik";
 import * as yup from "yup";
 
 import StepForm from "./StepForm";
+import artifacts from "orbyc-contracts/artifacts/contracts/tokens/ERC245/ERC245.sol/ERC245.json";
+
+interface FormProps {
+  values: AssetMetadata.AsObject & Asset.AsObject;
+}
 
 interface Composition {
   parentid: number;
@@ -18,9 +23,25 @@ interface AssetRelations {
   certificatesList: number[];
 }
 
-interface FormProps {
-  values: AssetMetadata.AsObject & Asset.AsObject & AssetRelations;
+interface AssetRelationsFormProps {
+  values: AssetRelations;
 }
+
+interface AssetFormProps {
+  assetid: number;
+}
+
+export interface SubmitFormProps {
+  isSubmitting?: boolean;
+}
+
+const PublishForm = ({ isSubmitting }: SubmitFormProps) => (
+  <>
+    <button type="submit" disabled={isSubmitting}>
+      Publish to Blockchain
+    </button>
+  </>
+);
 
 const validationSchema = yup.object({});
 
@@ -28,11 +49,6 @@ export function AssetForm() {
   /* load asset data TODO: get as dependencies */
   const asset = new Asset();
   const metadata = AssetMetadata.deserializeBinary(decodeHex(asset.getMetadata()));
-  const relations: AssetRelations = {
-    compositionsList: [],
-    traceabilityList: [],
-    certificatesList: [],
-  };
 
   /* parse creation date */
   const creationTimestamp = metadata.getCreation()?.getDate();
@@ -274,7 +290,120 @@ export function AssetForm() {
     </FieldArray>
   );
 
-  const CompositionForm = ({ values }: FormProps) => (
+  return (
+    <Formik
+      initialValues={{
+        ...asset.toObject(),
+        ...metadata.toObject(),
+        createdAt: creationDate,
+      }}
+      validationSchema={validationSchema}
+      onSubmit={async (e) => {
+        console.log({ e });
+      }}
+    >
+      {({ values, isSubmitting }) => (
+        <StepForm
+          steps={[
+            { label: "General", element: <GeneralForm /> },
+            { label: "Properties", element: <PropertiesForm values={values} /> },
+            { label: "Gallery", element: <GalleryForm values={values} /> },
+            { label: "Creation", element: <CreationForm /> },
+            { label: "Links", element: <LinksForm values={values} /> },
+            { label: "Publish", element: <PublishForm isSubmitting={isSubmitting} /> },
+          ]}
+        >
+          {(body) => <Form>{body}</Form>}
+        </StepForm>
+      )}
+    </Formik>
+  );
+}
+
+/*
+  ASSET TRACEABILITY
+*/
+
+export function AssetTraceabilityForm(props: AssetFormProps) {
+  const relations: AssetRelations = {
+    traceabilityList: [],
+    compositionsList: [],
+    certificatesList: [],
+  };
+
+  const TraceabilityForm = ({ values }: AssetRelationsFormProps) => (
+    <FieldArray name="traceabilityList">
+      {({ remove, push }) => (
+        <>
+          {values.traceabilityList &&
+            values.traceabilityList.map((_, index) => (
+              <div key={index}>
+                <div className="row">
+                  <label htmlFor={`traceabilityList.${index}`}>Movement Id</label>
+                  <Field name={`traceabilityList.${index}`} type="number" />
+                  <ErrorMessage
+                    name={`traceabilityList.${index}`}
+                    component="div"
+                    className="field-error"
+                  />
+                </div>
+                <div className="col">
+                  <button type="button" className="secondary" onClick={() => remove(index)}>
+                    X
+                  </button>
+                </div>
+              </div>
+            ))}
+
+          <button
+            type="button"
+            className="secondary"
+            onClick={() => {
+              const element: number = 0;
+              push(element);
+            }}
+          >
+            Add Movement
+          </button>
+        </>
+      )}
+    </FieldArray>
+  );
+
+  return (
+    <Formik
+      initialValues={{ ...relations }}
+      validationSchema={validationSchema}
+      onSubmit={async (e) => {
+        console.log({ e });
+      }}
+    >
+      {({ values, isSubmitting }) => (
+        <StepForm
+          steps={[
+            { label: "Traceability", element: <TraceabilityForm values={values} /> },
+            { label: "Publish", element: <PublishForm isSubmitting={isSubmitting} /> },
+          ]}
+        >
+          {(body) => <Form>{body}</Form>}
+        </StepForm>
+      )}
+    </Formik>
+  );
+}
+
+/*
+  ASSET COMPOSITION
+*/
+
+export function AssetCompositionForm(props: AssetFormProps) {
+  const relations: AssetRelations = {
+    traceabilityList: [],
+    compositionsList: [],
+    certificatesList: [],
+  };
+
+  const CompositionForm = ({ values }: AssetRelationsFormProps) => (
     <FieldArray name="compositionsList">
       {({ remove, push }) => (
         <>
@@ -327,46 +456,40 @@ export function AssetForm() {
     </FieldArray>
   );
 
-  const TraceabilityForm = ({ values }: FormProps) => (
-    <FieldArray name="traceabilityList">
-      {({ remove, push }) => (
-        <>
-          {values.traceabilityList &&
-            values.traceabilityList.map((_, index) => (
-              <div key={index}>
-                <div className="row">
-                  <label htmlFor={`traceabilityList.${index}`}>Movement Id</label>
-                  <Field name={`traceabilityList.${index}`} type="number" />
-                  <ErrorMessage
-                    name={`traceabilityList.${index}`}
-                    component="div"
-                    className="field-error"
-                  />
-                </div>
-                <div className="col">
-                  <button type="button" className="secondary" onClick={() => remove(index)}>
-                    X
-                  </button>
-                </div>
-              </div>
-            ))}
-
-          <button
-            type="button"
-            className="secondary"
-            onClick={() => {
-              const element: number = 0;
-              push(element);
-            }}
-          >
-            Add Movement
-          </button>
-        </>
+  return (
+    <Formik
+      initialValues={{ ...relations }}
+      validationSchema={validationSchema}
+      onSubmit={async (e) => {
+        console.log({ e });
+      }}
+    >
+      {({ values, isSubmitting }) => (
+        <StepForm
+          steps={[
+            { label: "Composition", element: <CompositionForm values={values} /> },
+            { label: "Publish", element: <PublishForm isSubmitting={isSubmitting} /> },
+          ]}
+        >
+          {(body) => <Form>{body}</Form>}
+        </StepForm>
       )}
-    </FieldArray>
+    </Formik>
   );
+}
 
-  const CertificatesForm = ({ values }: FormProps) => (
+/*
+  ASSET CERTIFICATES
+*/
+
+export function AssetCertificatesForm(props: AssetFormProps) {
+  const relations: AssetRelations = {
+    traceabilityList: [],
+    compositionsList: [],
+    certificatesList: [],
+  };
+
+  const CertificatesForm = ({ values }: AssetRelationsFormProps) => (
     <FieldArray name="certificatesList">
       {({ remove, push }) => (
         <>
@@ -405,37 +528,19 @@ export function AssetForm() {
     </FieldArray>
   );
 
-  const PublishForm = () => (
-    <>
-      <button type="submit">Publish to Blockchain</button>
-    </>
-  );
-
   return (
     <Formik
-      initialValues={{
-        ...asset.toObject(),
-        ...metadata.toObject(),
-        ...relations,
-        createdAt: creationDate,
-      }}
+      initialValues={{ ...relations }}
       validationSchema={validationSchema}
       onSubmit={async (e) => {
         console.log({ e });
       }}
     >
-      {({ values }) => (
+      {({ values, isSubmitting }) => (
         <StepForm
           steps={[
-            { label: "General", element: <GeneralForm /> },
-            { label: "Properties", element: <PropertiesForm values={values} /> },
-            { label: "Gallery", element: <GalleryForm values={values} /> },
-            { label: "Creation", element: <CreationForm /> },
-            { label: "Links", element: <LinksForm values={values} /> },
-            { label: "Composition", element: <CompositionForm values={values} /> },
-            { label: "Traceability", element: <TraceabilityForm values={values} /> },
             { label: "Certificates", element: <CertificatesForm values={values} /> },
-            { label: "Publish", element: <PublishForm /> },
+            { label: "Publish", element: <PublishForm isSubmitting={isSubmitting} /> },
           ]}
         >
           {(body) => <Form>{body}</Form>}

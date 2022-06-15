@@ -1,21 +1,15 @@
 import { Link } from "react-router-dom";
 import { useMetaMask } from "metamask-react";
-import { useContext, useState } from "react";
-import { AppBar, Box, Dialog, Grid, IconButton, Toolbar } from "@mui/material";
-import Tab from "@mui/material/Tab";
-import { TabContext, TabList, TabPanel } from "@mui/lab";
+import React, { useContext, useState } from "react";
 
 import { AccountContext } from "../context/DataSourceContext";
 import { CertificateForm } from "./CertificateForm";
 import { MovementForm } from "./MovementForm";
 import { AssetForm } from "./AssetForm";
 
-import FeedRoundedIcon from "@mui/icons-material/FeedRounded";
-import VerifiedUserRoundedIcon from "@mui/icons-material/VerifiedUserRounded";
-import TimelineRoundedIcon from "@mui/icons-material/TimelineRounded";
-import CloseIcon from "@mui/icons-material/Close";
+import { FormModal } from "./FormModal";
 
-type ModalForm = "ASSET" | "CERTIFICATE" | "MOVEMENT";
+export type ModalForm = "ASSET" | "CERTIFICATE" | "MOVEMENT";
 
 export function Navigation() {
   const { chainId } = useMetaMask();
@@ -27,7 +21,13 @@ export function Navigation() {
 
   return (
     <>
-      <FormModal open={open} handleClose={handleClose} />
+      <FormModal open={open} handleClose={handleClose}>
+        <>
+          {open === "ASSET" && <AssetForm />}
+          {open === "MOVEMENT" && <MovementForm />}
+          {open === "CERTIFICATE" && <CertificateForm />}
+        </>
+      </FormModal>
       <ul>
         <li>
           <Link to={`/dashboard`}>Assets</Link>
@@ -52,34 +52,5 @@ export function Navigation() {
         </li>
       </ul>
     </>
-  );
-}
-
-interface FormModalProps {
-  open?: ModalForm;
-  handleClose: () => void;
-}
-
-function FormModal({ open, handleClose }: FormModalProps) {
-  const [value, setValue] = useState("1");
-
-  const handleChange = (event: React.SyntheticEvent, newValue: string) => {
-    setValue(newValue);
-  };
-
-  return (
-    <Dialog open={open !== undefined} onClose={handleClose} maxWidth="xl" fullScreen>
-      <AppBar position="relative" color="transparent" elevation={0}>
-        <Toolbar>
-          <Box flex={1} />
-          <IconButton edge="start" color="inherit" onClick={handleClose} aria-label="close">
-            <CloseIcon />
-          </IconButton>
-        </Toolbar>
-      </AppBar>
-      {open === "ASSET" && <AssetForm />}
-      {open === "MOVEMENT" && <MovementForm />}
-      {open === "CERTIFICATE" && <CertificateForm />}
-    </Dialog>
   );
 }
