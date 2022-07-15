@@ -1,6 +1,7 @@
 import { Field, Form, Formik } from "formik";
 import { Asset } from "orbyc-core/pb/domain_pb";
 import { useContext, useState } from "react";
+import { Link } from "react-router-dom";
 import {
   AssetCertificatesForm,
   AssetCompositionForm,
@@ -56,6 +57,9 @@ export default function Assets() {
               <li>{asset.getId()}</li>
               <li>{asset.getIssuer()}</li>
               <li>{asset.getOwner()}</li>
+              <li>
+                <Link to={`/?id=1&route=ASSET`}>View in Explorer</Link>
+              </li>
               <li>
                 <button onClick={handleOpen("CERTIFICATES")}>Add Certificates</button>
               </li>

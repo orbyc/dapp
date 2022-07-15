@@ -1,20 +1,20 @@
 import { Outlet } from "react-router-dom";
 import { MetaMaskProvider, useMetaMask } from "metamask-react";
 import { Navigation } from "./components/Navigation";
-import { mockDataSource } from "components/Explorer/context/datasourceMock";
-import { mockERC245, mockERC423 } from "components/Explorer";
 import { AccountContext, DataSourceContext } from "./context/DataSourceContext";
 import { useContext } from "react";
 import { useFetch } from "utils/hooks";
 import { Loading } from "components/Loading";
 import { ThemeProvider } from "@emotion/react";
 import { createTheme } from "@mui/material";
+import { EthersDataSource } from "components/Explorer/context/datasource";
+import { ethers } from "ethers";
 
 const theme = createTheme({
-  shape:{
-    borderRadius:25
-  }
-})
+  shape: {
+    borderRadius: 25,
+  },
+});
 
 export function DashboardLayout() {
   return (
@@ -25,7 +25,7 @@ export function DashboardLayout() {
 }
 
 function LoginView() {
-  const { status, connect } = useMetaMask();
+  const { status, ethereum, connect } = useMetaMask();
 
   if (status === "initializing") return <div>Synchronization with MetaMask ongoing...</div>;
 
@@ -37,7 +37,11 @@ function LoginView() {
 
   if (status === "connected")
     return (
-      <DataSourceContext.Provider value={mockDataSource(mockERC245, mockERC423)}>
+      <DataSourceContext.Provider
+        value={EthersDataSource(
+          new ethers.providers.Web3Provider(ethereum),
+        )}
+      >
         <AccountView />
       </DataSourceContext.Provider>
     );
