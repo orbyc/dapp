@@ -6,54 +6,66 @@ import { useContext } from "react";
 import { useFetch } from "utils/hooks";
 import { Loading } from "components/Loading";
 import { ThemeProvider } from "@emotion/react";
-import { createTheme } from "@mui/material";
+import { createTheme } from "@mui/material/styles";
 import { EthersDataSource } from "components/Explorer/context/datasource";
 import { ethers } from "ethers";
+import ConnectInfo from "./components/ConnectInfo";
 
 const theme = createTheme({
-  shape: {
-    borderRadius: 25,
+  palette: {
+    primary: {
+      main: "#000000",
+    },
+    secondary: {
+      main: "#ffffff",
+    },
+  },
+  breakpoints: {
+    values: {
+      xs: 0,
+      sm: 600,
+      md: 900,
+      lg: 1200,
+      xl: 1536,
+    },
   },
 });
 
 export function DashboardLayout() {
   return (
     <MetaMaskProvider>
-      <LoginView />
+      <ThemeProvider theme={theme}>
+        <LoginView />
+      </ThemeProvider>
     </MetaMaskProvider>
   );
 }
 
 function LoginView() {
   const { status, ethereum, connect } = useMetaMask();
-
-  if (status === "initializing") return <div>Synchronization with MetaMask ongoing...</div>;
-
-  if (status === "unavailable") return <div>MetaMask not available</div>;
-
-  if (status === "notConnected") return <button onClick={connect}>Connect to MetaMask</button>;
-
-  if (status === "connecting") return <div>Connecting...</div>;
+  if (status !== "connected") {
+    return <ConnectInfo onclick={connect} status={status} />;
+  }
 
   if (status === "connected")
     return (
       <DataSourceContext.Provider
-        value={EthersDataSource(
-          new ethers.providers.Web3Provider(ethereum),
-        )}
+        value={EthersDataSource(new ethers.providers.Web3Provider(ethereum))}
       >
         <AccountView />
       </DataSourceContext.Provider>
     );
 
-  return <></>;
+  return <Loading />;
 }
 
 function AccountView() {
   const dataSource = useContext(DataSourceContext);
   const { account: agent } = useMetaMask();
 
-  const { data: account, loading } = useFetch(dataSource.erc423.accountOf(agent || ""));
+  const { data: account, loading } = useFetch(
+    dataSource.erc423.accountOf(agent || "")
+  );
 
   if (loading) return <Loading />;
 
