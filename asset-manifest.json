@@ -1,16 +1,14 @@
 {
   "files": {
     "main.css": "/dapp/static/css/main.e594b1c3.css",
-    "main.js": "/dapp/static/js/main.abce6f1b.js",
+    "main.js": "/dapp/static/js/main.c7cdcb81.js",
     "static/js/787.4289fcb6.chunk.js": "/dapp/static/js/787.4289fcb6.chunk.js",
-    "static/media/map_updated.png": "/dapp/static/media/map_updated.40ec201986eea8cacbf1.png",
-    "static/media/qr-logo.png": "/dapp/static/media/qr-logo.e735ac308759334f8908.png",
     "index.html": "/dapp/index.html",
-    "main.abce6f1b.js.map": "/dapp/static/js/main.abce6f1b.js.map",
+    "main.c7cdcb81.js.map": "/dapp/static/js/main.c7cdcb81.js.map",
     "787.4289fcb6.chunk.js.map": "/dapp/static/js/787.4289fcb6.chunk.js.map"
   },
   "entrypoints": [
     "static/css/main.e594b1c3.css",
-    "static/js/main.abce6f1b.js"
+    "static/js/main.c7cdcb81.js"
   ]
 }
